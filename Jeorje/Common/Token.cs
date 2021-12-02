@@ -4,10 +4,12 @@ namespace Jeorje
     {
         public TokenType TokenType;
         public string Lexeme;
+        public bool IsOperator;
         
         public Token(string token)
         {
             TokenType = ParseTokenType(token);
+            IsOperator = ParseIsOperator(token); 
             Lexeme = token;
         }
 
@@ -15,6 +17,7 @@ namespace Jeorje
         {
             TokenType = tokenType;
             Lexeme = lexeme;
+            IsOperator = false;
         }
         
         private TokenType ParseTokenType(string token)
@@ -29,6 +32,20 @@ namespace Jeorje
                     return TokenType.Identifier;
             }
         } 
+        
+        private bool ParseIsOperator(string token)
+        {
+            switch (token)
+            {
+                case "!":
+                    return true;
+                    break;
+                
+                default:
+                    return false;
+            }
+        } 
+        
     }
 
     public enum TokenType
@@ -50,6 +67,9 @@ namespace Jeorje
         RBrace, // }
         LParen, // (
         RParen, // )
-        Identifier // ???
+        Identifier, // ???
+        MathOperator, // +, - , *
+        Comma, // ,
+        FuncSeparator, // "@"
     }
 }
