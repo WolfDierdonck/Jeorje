@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Jeorje
 {
@@ -6,7 +7,11 @@ namespace Jeorje
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            var jeorjeInput = new string[]{"a & b | c", "forall x . x > 5 & P(x, f(y)) | !c"};
+            var lines = Scanner.ScanInput(jeorjeInput);
+
+            (CheckType checkType, List<Line> predicates, Line goal, List<Line> proof) =
+                Transformer.TransformLines(lines);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Jeorje
         public Token(string token)
         {
             TokenType = ParseTokenType(token);
-            IsOperator = ParseIsOperator(token); 
+            IsOperator = ParseIsOperator(TokenType); 
             Lexeme = token;
         }
 
@@ -26,23 +26,72 @@ namespace Jeorje
             {
                 case "!":
                     return TokenType.Not;
-                    break;
+                case "&":
+                    return TokenType.And;
+                case "|":
+                    return TokenType.Or;
+                case "=>":
+                    return TokenType.Implies;
+                case "<=>":
+                    return TokenType.Iff;
+                case "false":
+                    return TokenType.False;
+                case "true":
+                    return TokenType.True;
+                case "forall":
+                    return TokenType.Forall;
+                case "exists":
+                    return TokenType.Exists;
+                case "=":
+                    return TokenType.Equal;
+                case "!=":
+                    return TokenType.NotEqual;
+                case ".":
+                    return TokenType.Dot;
+                case ":":
+                    return TokenType.Colon;
+                case "{":
+                    return TokenType.LBrace;
+                case "}":
+                    return TokenType.RBrace;
+                case "(":
+                    return TokenType.LParen;
+                case ")":
+                    return TokenType.RParen;
+                case "+":
+                    return TokenType.MathOperator;
+                case "-":
+                    return TokenType.MathOperator;
+                case "*":
+                    return TokenType.MathOperator;
+                case "/":
+                    return TokenType.MathOperator;
+                case ">":
+                    return TokenType.MathOperator;
+                case "<":
+                    return TokenType.MathOperator;
+                case ">=":
+                    return TokenType.MathOperator;
+                case "<=":
+                    return TokenType.MathOperator;
+                case ",":
+                    return TokenType.Comma;
+                case "#":
+                    return TokenType.Hashtag;
                 
                 default:
                     return TokenType.Identifier;
             }
         } 
         
-        private bool ParseIsOperator(string token)
+        private bool ParseIsOperator(TokenType tokenType)
         {
-            switch (token)
+            switch (tokenType)
             {
-                case "!":
-                    return true;
-                    break;
-                
-                default:
+                case TokenType.Identifier:
                     return false;
+                default:
+                    return true;
             }
         } 
         
@@ -71,5 +120,6 @@ namespace Jeorje
         MathOperator, // +, - , *
         Comma, // ,
         FuncSeparator, // "@"
+        Hashtag, // #
     }
 }
