@@ -8,29 +8,48 @@ namespace Jeorje
     {
         static void Main(string[] args)
         {
-            var jeorjeInput = new string[]{"a & b | c", "forall x . x > 5 & P(x, f(y)) | !c"};
-
+            var jeorjeInput = "#check ND\n" +
+                              "\n" +
+                              "a & b\n" +
+                              "a => c\n" +
+                              "|-\n" +
+                              "c\n" +
+                              "\n" +
+                              "1) a & b premise\n" +
+                              "2) a => c premise\n" +
+                              "3) a by and_e on 1\n" +
+                              "4) c by imp_e on 2,3";
+            
             string output;
 
             try
             {
-                var lines = Scanner.ScanInput(jeorjeInput);
+                var lines = Scanner.ScanInput(jeorjeInput.Split("\n"));
 
-                (CheckType checkType, List<Line> predicates, Line goal, List<Line> proof) =
-                    Transformer.TransformLines(lines);
+                var proofFormat = Transformer.TransformLines(lines);
 
-                List<AST> predicateASTs = Parser.ParseLines(predicates);
-                AST goalAST = Parser.ParseLine(goal);
-                List<AST> proofASTs = Parser.ParseLines(proof);
-
-                switch (checkType)
+                switch (proofFormat.CheckType)
                 {
                     case CheckType.ND:
-                        output = CheckND.Validate(predicateASTs, goalAST, proofASTs);
+                        var ndFormat = proofFormat as NDFormat;
+                        List<AST> ndPredicates = Parser.ParseLines(ndFormat.Predicates);
+                        AST ndGoal = Parser.ParseLine(ndFormat.Goal);
+                        List<AST> ndProof = Parser.ParseLines(ndFormat.Proof);
+                        
+                        output = Validator.ValidateND(ndPredicates, ndGoal, ndProof);
+                        break;
+                    
+                    case CheckType.ST:
+                        var stFormat = proofFormat as NDFormat;
+                        List<AST> stPredicates = Parser.ParseLines(stFormat.Predicates);
+                        AST stGoal = Parser.ParseLine(stFormat.Goal);
+                        List<AST> stProof = Parser.ParseLines(stFormat.Proof);
+                        
+                        output = Validator.ValidateST(stPredicates, stGoal, stProof);
                         break;
                     
                     default:
-                        throw new Exception($"check type {checkType.ToString()} not supported yet");
+                        throw new Exception($"check type {proofFormat.CheckType.ToString()} not supported yet");
                 }
             }
             catch (Exception e)

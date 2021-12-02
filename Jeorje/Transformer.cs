@@ -2,22 +2,36 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Jeorje
 {
     public static class Transformer
     {
-        public static (CheckType, List<Line>, Line, List<Line>) TransformLines(List<Line> lines)
+        public static ProofFormat TransformLines(List<Line> lines)
         {
             CollapseEntails(lines); // modifies lines
             RemoveEmptyLines(lines); // modifies lines
             InsertHelperTokens(lines); // modifies lines
             
             var checkType = FindCheckType(lines); // modifies lines
-            (List<Line> predicates, Line goal) = FindPremisesAndGoal(lines); // modifies lines
-            List<Line> proof = lines;
 
-            return (checkType, predicates, goal, proof);
+            switch (checkType)
+            {
+                case CheckType.ND:
+                    var t1 = FindPremisesAndGoal(lines); // modifies lines
+                    return new NDFormat(t1.Item1, t1.Item2, lines);
+                
+                case CheckType.ST:
+                    var t2 = FindPremisesAndGoal(lines); // modifies lines
+                    return new STFormat(t2.Item1, t2.Item2, lines);
+                
+                case CheckType.PC:
+                    return new PCFormat(lines);
+                
+                default:
+                    throw new Exception($"check type {checkType.ToString()} not supported yet");
+            } 
         }
 
         private static void CollapseEntails(List<Line> lines)
@@ -38,6 +52,8 @@ namespace Jeorje
                         
                         line.Tokens = temp;
                     }
+
+                    i++;
                 }
             }
             
@@ -73,7 +89,10 @@ namespace Jeorje
                 throw new Exception($"Line {checkIndex+1} must be in the format: #check \"checkType\"");
             }
             
-            return (CheckType) Enum.Parse(typeof(CheckType), lines[checkIndex].Tokens[2].Lexeme);
+            var checkType = (CheckType) Enum.Parse(typeof(CheckType), lines[checkIndex].Tokens[2].Lexeme);
+            lines.RemoveRange(0, checkIndex+1);
+
+            return checkType;
 
         }
 

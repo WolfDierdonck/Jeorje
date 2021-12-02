@@ -20,7 +20,8 @@ namespace Jeorje
             '-',
             '*',
             '/',
-            ','
+            ',',
+            '#'
         };
 
         public static List<Line> ScanInput(string[] input)
@@ -33,7 +34,7 @@ namespace Jeorje
             var transformedLine = TransformLine(line);
             var splitLine = transformedLine.Split(" ");
             
-            return new Line(splitLine.Select(token => new Token(token)).ToList());
+            return new Line(splitLine.Where(e => !string.IsNullOrEmpty(e)).Select(token => new Token(token)).ToList());
         }
 
         private static string TransformLine(string line)

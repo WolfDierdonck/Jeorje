@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <Compile Remove="Cleaner.cs" />
+    <Compile Remove="Common\ZFormat.cs" />
   </ItemGroup>
 
 </Project>
