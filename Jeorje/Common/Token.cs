@@ -121,5 +121,6 @@ namespace Jeorje
         Comma, // ,
         FuncSeparator, // "@"
         Hashtag, // #
+        Entails, // |-
     }
 }
