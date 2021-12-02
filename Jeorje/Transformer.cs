@@ -11,6 +11,7 @@ namespace Jeorje
         {
             CollapseEntails(lines); // modifies lines
             RemoveEmptyLines(lines); // modifies lines
+            InsertHelperTokens(lines); // modifies lines
             
             var checkType = FindCheckType(lines); // modifies lines
             (List<Line> predicates, Line goal) = FindPremisesAndGoal(lines); // modifies lines
@@ -89,6 +90,34 @@ namespace Jeorje
             lines.RemoveRange(0, currentLineIndex+2);
 
             return (premises, goal);
+        }
+
+        /// <summary>
+        /// inserts tokens between function name and bracket and to the left of NOT characters
+        /// </summary>
+        /// <param name="lines"></param>
+        private static void InsertHelperTokens(List<Line> lines)
+        {
+            foreach (var line in lines)
+            {
+                var tokens = line.Tokens;
+                var i = 0;
+
+                while (i < tokens.Count)
+                {
+                    if (tokens[i].TokenType == TokenType.Or)
+                    {
+                        tokens.Insert(i, new Token(TokenType.DummyNotOperand, "$"));
+                    }
+                    else if (i < tokens.Count - 1 &&
+                             tokens[i].TokenType == TokenType.Identifier && tokens[i + 1].TokenType == TokenType.LParen)
+                    {
+                        tokens.Insert(i+1, new Token(TokenType.FuncSeparator, "@"));
+                    }
+
+                    i++;
+                }
+            }
         }
     }
 }

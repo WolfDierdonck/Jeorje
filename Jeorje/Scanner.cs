@@ -46,12 +46,8 @@ namespace Jeorje
             {
                 if (_paddedItems.Contains(lineList[i])) // should pad item
                 {
-                    var tempList = lineList.GetRange(0, i);
-                    tempList.Add(' ');
-                    tempList.Add(lineList[i]);
-                    tempList.Add(' ');
-                    tempList.AddRange(lineList.GetRange(i + 1, lineList.Count - i + 1));
-                    lineList = tempList;
+                    lineList.Insert(i+1, ' '); // inserts space after
+                    lineList.Insert(i, ' '); // inserts space before
                     i++;
                 }
 

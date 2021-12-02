@@ -1,26 +1,38 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Jeorje
 {
     public class Parser
     {
-        private static List<TokenType> collapsibleOperators = new List<TokenType>
+        private static readonly List<TokenType> _collapsibleOperators = new List<TokenType>
         {
             TokenType.And,
-            TokenType.Or
+            TokenType.Or,
+            TokenType.Comma
         };
 
-        public static AST collapseTree(BinaryAST input)
+        public static List<AST> ParseLines(List<Line> lines)
+        {
+            return lines.Select(ParseLine).ToList();
+        }
+
+        public static AST ParseLine(Line line)
+        {
+            return CollapseTree(ShuntingYard.ConvertInfixToAST(line));
+        }
+
+        private static AST CollapseTree(BinaryAST input)
         {
             if (null == input)
             {
                 return null;
             }
-            
+
             if (input.Token.IsOperator)
             {
                 // Operator, interesting stuff here
-                if (collapsibleOperators.Contains(input.Token.TokenType))
+                if (_collapsibleOperators.Contains(input.Token.TokenType))
                 {
                     // Only consider the right node because the left node cannot be pulled in
                     return CollapseOperator(input);
@@ -28,8 +40,8 @@ namespace Jeorje
                 else
                 {
                     AST newNode = new AST(input.Token);
-                    var left = collapseTree(input.left);
-                    var right = collapseTree(input.right);
+                    var left = CollapseTree(input.left);
+                    var right = CollapseTree(input.right);
                     newNode.Children.Add(left);
                     newNode.Children.Add(right);
                     return newNode;
@@ -37,13 +49,13 @@ namespace Jeorje
             }
             else
             {
-                return new AST(input.Token); 
+                return new AST(input.Token);
             }
         }
 
         private static AST CollapseOperator(BinaryAST input)
         {   
-            var left = collapseTree(input.left);
+            var left = CollapseTree(input.left);
             var right = input.right;
             AST newNode = new AST(input.Token);
             newNode.Children.Add(left);
@@ -51,11 +63,11 @@ namespace Jeorje
             var rightTmp = right;
             while (rightTmp.Token.TokenType == input.Token.TokenType)
             {
-                newNode.Children.Add(collapseTree(rightTmp.left));
+                newNode.Children.Add(CollapseTree(rightTmp.left));
                 rightTmp = rightTmp.right;
             }
 
-            newNode.Children.Add(collapseTree(rightTmp)); 
+            newNode.Children.Add(CollapseTree(rightTmp)); 
             return newNode;
         }
 

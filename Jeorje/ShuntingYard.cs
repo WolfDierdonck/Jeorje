@@ -18,7 +18,7 @@ namespace Jeorje
         {
             {TokenType.FuncSeparator, 10},
             {TokenType.MathOperator, 9},
-            {TokenType.Not, 8},
+            {TokenType.Not, 8}, // is this correct, shouldnt it be the highest?
             {TokenType.And, 7},
             {TokenType.Or, 6},
             {TokenType.Implies, 5},
@@ -57,19 +57,26 @@ namespace Jeorje
                         operatorStack.Push(t);
                         break;
                     case TokenType.RBrace:
+                        var endOuterLoop = false;
                         while (operatorStack.Count != 0)
                         {
                             popped = operatorStack.Pop();
                             if (popped.TokenType == TokenType.LBrace)
                             {
-                                goto endOuterLoop;
+                                endOuterLoop = true; 
                             }
                             else
                             {
                                 addNode(operandStack, popped);
                             }
                         }
-                        throw new Exception("Bottom of operator stack is not a left brace and we are attempting to add a right brace");
+
+                        if (!endOuterLoop)
+                        {
+                            throw new Exception("Bottom of operator stack is not a left brace and we are attempting to add a right brace");
+                        }
+
+                        break;
                     default:
                         if (t.IsOperator)
                         {
@@ -96,7 +103,6 @@ namespace Jeorje
                         }
                         break;
                 }
-                endOuterLoop: ;
             }
 
             while (operatorStack.Count != 0)

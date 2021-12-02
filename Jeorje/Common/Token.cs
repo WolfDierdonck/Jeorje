@@ -122,5 +122,6 @@ namespace Jeorje
         FuncSeparator, // "@"
         Hashtag, // #
         Entails, // |-
+        DummyNotOperand, // $
     }
 }
