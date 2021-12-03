@@ -89,7 +89,7 @@ namespace Jeorje
             throw new Exception($"Input is not in DFA at {input}" );
           }
           
-          accumulator.Add(new Token(new string(ListDiff(input, toAdd.Item1).ToArray())));
+          accumulator.Add(new Token(toAdd.Item2,new string(ListDiff(input, toAdd.Item1).ToArray())));
           
           return Recur(toAdd.Item1, accumulator);
         }

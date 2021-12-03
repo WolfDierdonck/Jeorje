@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Jeorje.NDRules
+namespace Jeorje
 {
-    public class NDAndI: NDRule
+    public class NDAndI : NDRule
     {
         public string Label { get; set; }
         public string Name { get; set; }

@@ -8,14 +8,15 @@ namespace Jeorje
     {
         static void Main(string[] args)
         {
-            var jeorjeInput = "#check ND\n" +
+            var jeorjeInput = "this is just a test\n" +
+                              "#check ND\n" +
                               "\n" +
                               "a & b\n" +
                               "a => c\n" +
                               "|-\n" +
                               "c\n" +
                               "\n" +
-                              "1) a & b premise\n" +
+                              "1abcd) a & b premise\n" +
                               "2) a => c premise\n" +
                               "3) a by and_e on 1\n" +
                               "4) c by imp_e on 2,3";
@@ -24,9 +25,9 @@ namespace Jeorje
 
             try
             {
-                var lines = Scanner.ScanInput(jeorjeInput.Split("\n"));
+                var tokens = Scanner.MaximalMunchScan(jeorjeInput);
 
-                var proofFormat = Transformer.TransformLines(lines);
+                var proofFormat = Transformer.TransformTokens(tokens);
 
                 switch (proofFormat.CheckType)
                 {
@@ -34,20 +35,11 @@ namespace Jeorje
                         var ndFormat = proofFormat as NDFormat;
                         List<AST> ndPredicates = Parser.ParseLines(ndFormat.Predicates);
                         AST ndGoal = Parser.ParseLine(ndFormat.Goal);
-                        List<AST> ndProof = Parser.ParseLines(ndFormat.Proof);
+                        List<NDRule> ndProof = NDRulifier.RulifyLines(ndFormat.Proof);
                         
-                        output = Validator.ValidateND(ndPredicates, ndGoal, null);
+                        output = Validator.ValidateND(ndPredicates, ndGoal, ndProof);
                         break;
-                    
-                    case CheckType.ST:
-                        var stFormat = proofFormat as NDFormat;
-                        List<AST> stPredicates = Parser.ParseLines(stFormat.Predicates);
-                        AST stGoal = Parser.ParseLine(stFormat.Goal);
-                        List<AST> stProof = Parser.ParseLines(stFormat.Proof);
-                        
-                        output = Validator.ValidateST(stPredicates, stGoal, stProof);
-                        break;
-                    
+
                     default:
                         throw new Exception($"check type {proofFormat.CheckType.ToString()} not supported yet");
                 }

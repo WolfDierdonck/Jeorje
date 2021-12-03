@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace Jeorje
 {
     public class Token
@@ -6,36 +8,30 @@ namespace Jeorje
         public string Lexeme;
         public bool IsOperator;
         
-        public Token(string token)
+        public Token(string kind)
         {
-            TokenType = ParseTokenType(token);
+            TokenType = ParseTokenType(kind);
             IsOperator = ParseIsOperator(TokenType); 
-            Lexeme = token;
+            Lexeme = kind;
+        }
+
+        public Token(string kind, string lexeme)
+        {
+            TokenType = ParseTokenType(kind, lexeme);
+            Lexeme = lexeme;
+            IsOperator = ParseIsOperator(TokenType);
         }
 
         public Token(TokenType tokenType, string lexeme)
         {
             TokenType = tokenType;
             Lexeme = lexeme;
-            IsOperator = false;
+            IsOperator = ParseIsOperator(TokenType);
         }
-
-        public static bool operator ==(Token lhs, Token rhs)
+        
+        private TokenType ParseTokenType(string kind, string lexeme = null)
         {
-            if (lhs is null)
-            {
-                return rhs is null;
-            }
-            if (rhs is null)
-            {
-                return false;
-            }
-            return lhs.Lexeme == rhs.Lexeme && lhs.TokenType == rhs.TokenType;
-        }
-        public static bool operator !=(Token lhs, Token rhs) => !(lhs == rhs);            
-        private TokenType ParseTokenType(string token)
-        {
-            switch (token)
+            switch (kind)
             {
                 case "!":
                     return TokenType.Not;
@@ -91,8 +87,28 @@ namespace Jeorje
                     return TokenType.Comma;
                 case "#":
                     return TokenType.Hashtag;
+                case "|-":
+                    return TokenType.Entails;
+                case "//":
+                    return TokenType.Comment;
+                case "whiteSpace":
+                    return TokenType.Whitespace;
                 
                 default:
+                    if (lexeme != null) 
+                    {
+                        return ParseTokenType(lexeme); // this is so stupid :)
+                    }
+
+                    if (char.IsDigit(kind[0]))
+                    {
+                        if (int.TryParse(kind, out _))
+                        {
+                            return TokenType.Integer;
+                        }
+                        return TokenType.Label;
+                    }
+
                     return TokenType.Identifier;
             }
         } 
@@ -103,10 +119,33 @@ namespace Jeorje
             {
                 case TokenType.Identifier:
                     return false;
+                case TokenType.False:
+                    return false;
+                case TokenType.True:
+                    return false;
+                case TokenType.Forall:
+                    return false;
+                case TokenType.Exists:
+                    return false;
+
                 default:
                     return true;
             }
         } 
+        
+        public static bool operator ==(Token lhs, Token rhs)
+        {
+            if (lhs is null)
+            {
+                return rhs is null;
+            }
+            if (rhs is null)
+            {
+                return false;
+            }
+            return lhs.Lexeme == rhs.Lexeme && lhs.TokenType == rhs.TokenType;
+        }
+        public static bool operator !=(Token lhs, Token rhs) => !(lhs == rhs);            
         
     }
 
@@ -136,10 +175,9 @@ namespace Jeorje
         Hashtag, // #
         Entails, // |-
         DummyNotOperand, // $
-        LessEquals, // <=
-        GreaterEquals, // >=
-        LessThan, // < 
-        GreaterThan, // > 
-        Comment // lmao
+        Comment, // lmao
+        Whitespace, // \n or \r or \t or ' '
+        Label, // must start with integer, then can be any alphanumeric character after
+        Integer
     }
 }

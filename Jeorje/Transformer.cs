@@ -3,140 +3,107 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 
 namespace Jeorje
 {
     public static class Transformer
     {
-        public static ProofFormat TransformLines(List<Line> lines)
+        public static ProofFormat TransformTokens(List<Token> tokens)
         {
-            CollapseEntails(lines); // modifies lines
-            RemoveEmptyLines(lines); // modifies lines
-            InsertHelperTokens(lines); // modifies lines
-            
-            var checkType = FindCheckType(lines); // modifies lines
+            var modifiedTokens = InsertHelperTokens(tokens).Where(token => 
+                token.TokenType != TokenType.Comment && token.TokenType != TokenType.Whitespace
+                ).ToList();
 
+            var hashtagIndex = modifiedTokens.FindIndex(token => token.TokenType == TokenType.Hashtag);
+            var checkType = (CheckType) Enum.Parse(typeof(CheckType), modifiedTokens[hashtagIndex+2].Lexeme);
+            modifiedTokens.RemoveRange(0, hashtagIndex+3);
+            
             switch (checkType)
             {
                 case CheckType.ND:
-                    var t1 = FindPremisesAndGoal(lines); // modifies lines
-                    return new NDFormat(t1.Item1, t1.Item2, lines);
-                
-                case CheckType.ST:
-                    var t2 = FindPremisesAndGoal(lines); // modifies lines
-                    return new STFormat(t2.Item1, t2.Item2, lines);
-                
-                case CheckType.PC:
-                    return new PCFormat(lines);
-                
+                    return GetNDFormat(modifiedTokens);
+
                 default:
                     throw new Exception($"check type {checkType.ToString()} not supported yet");
             } 
         }
 
-        private static void CollapseEntails(List<Line> lines)
+        private static List<Token> InsertHelperTokens(List<Token> tokens)
         {
-            foreach (var line in lines)
-            {
-                var i = 0;
-                while (i < line.Tokens.Count-1)
-                {
-                    if (line.Tokens[i].TokenType == TokenType.Or && line.Tokens[i + 1].Lexeme == "-")
-                    {
-                        var temp = line.Tokens.GetRange(0, i);
-                        temp.Add(new Token(TokenType.Entails, "|-"));
-                        if (i + 2 != line.Tokens.Count)
-                        {
-                            temp.AddRange(line.Tokens.GetRange(i+2, line.Tokens.Count-i-2));
-                        }
-                        
-                        line.Tokens = temp;
-                    }
+            var updatedTokens = tokens;
+            var i = 0;
 
+            while (i < tokens.Count)
+            {
+                if (tokens[i].TokenType == TokenType.Or)
+                {
+                    updatedTokens.Insert(i, new Token(TokenType.DummyNotOperand, "$"));
+                }
+                else if (i < tokens.Count - 1 &&
+                         tokens[i].TokenType == TokenType.Identifier && tokens[i + 1].TokenType == TokenType.LParen)
+                {
+                    updatedTokens.Insert(i + 1, new Token(TokenType.FuncSeparator, "@"));
+                }
+
+                i++;
+            }
+
+            return updatedTokens;
+        }
+
+        private static NDFormat GetNDFormat(List<Token> tokens)
+        {
+            var i = 0;
+            var predicates = new List<Line>();
+                    
+            while (tokens[i].TokenType != TokenType.Entails)
+            {
+                if (tokens[i].TokenType == TokenType.Comma)
+                {
+                    predicates.Add(new Line(tokens.GetRange(0, i)));
+                    tokens.RemoveRange(0, i+1);
+                    i = 0;
+                }
+                else
+                {
                     i++;
                 }
             }
             
-        }
+            predicates.Add(new Line(tokens.GetRange(0, i)));
+            tokens.RemoveRange(0, i+1);
 
-        private static void RemoveEmptyLines(List<Line> lines)
-        {
-            lines.RemoveAll(line => line.Tokens.Count == 0);
-        }
-        
-        private static CheckType FindCheckType(List<Line> lines)
-        {
-            int checkIndex = 0;
             
-            while (lines[checkIndex].Tokens[0].TokenType != TokenType.Hashtag)
-            { 
-                if (lines[checkIndex].Tokens[0].TokenType == TokenType.Hashtag)
+            i = 0;
+            while (tokens[i].TokenType != TokenType.Label)
+            {
+                i++;
+            }
+
+            var goal = new Line(tokens.GetRange(0, i));
+            tokens.RemoveRange(0, i+1);
+
+
+            var proof = new List<Line>();
+            i = 1; // first token will be a label, so we must start at 1
+            while (i < tokens.Count)
+            {
+                if (tokens[i].TokenType == TokenType.Label)
                 {
-                    break;
+                    proof.Add(new Line(tokens.GetRange(0, i)));
+                    tokens.RemoveRange(0, i+1);
+                    i = 0;
                 }
-
-                if (checkIndex + 1 == lines.Count)
+                else
                 {
-                    throw new Exception(
-                        "No check type found (you probably need to include #check ND at the top of the file)");
-                }
-
-                checkIndex++;
-            }
-
-            if (lines[checkIndex].Tokens[1].Lexeme != "check" || lines[checkIndex].Tokens.Count != 3)
-            {
-                throw new Exception($"Line {checkIndex+1} must be in the format: #check \"checkType\"");
-            }
-            
-            var checkType = (CheckType) Enum.Parse(typeof(CheckType), lines[checkIndex].Tokens[2].Lexeme);
-            lines.RemoveRange(0, checkIndex+1);
-
-            return checkType;
-
-        }
-
-        private static (List<Line>, Line) FindPremisesAndGoal(List<Line> lines)
-        {
-            var currentLineIndex = 0;
-            while (lines[currentLineIndex].Tokens[0].TokenType != TokenType.Entails)
-            {
-                currentLineIndex++;
-            }
-
-            var premises = lines.GetRange(0, currentLineIndex);
-            var goal = lines[currentLineIndex + 1];
-            lines.RemoveRange(0, currentLineIndex+2);
-
-            return (premises, goal);
-        }
-
-        /// <summary>
-        /// inserts tokens between function name and bracket and to the left of NOT characters
-        /// </summary>
-        /// <param name="lines"></param>
-        private static void InsertHelperTokens(List<Line> lines)
-        {
-            foreach (var line in lines)
-            {
-                var tokens = line.Tokens;
-                var i = 0;
-
-                while (i < tokens.Count)
-                {
-                    if (tokens[i].TokenType == TokenType.Or)
-                    {
-                        tokens.Insert(i, new Token(TokenType.DummyNotOperand, "$"));
-                    }
-                    else if (i < tokens.Count - 1 &&
-                             tokens[i].TokenType == TokenType.Identifier && tokens[i + 1].TokenType == TokenType.LParen)
-                    {
-                        tokens.Insert(i+1, new Token(TokenType.FuncSeparator, "@"));
-                    }
-
                     i++;
                 }
             }
+            
+            proof.Add(new Line(tokens.GetRange(0, i)));
+
+            return new NDFormat(predicates, goal, proof);
         }
     }
 }

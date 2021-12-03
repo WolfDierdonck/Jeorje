@@ -108,6 +108,9 @@ namespace Jeorje
                     
                     case '\r':
                         return "whiteSpace";
+                    
+                    default:
+                        return "ID";
                 }
             }
             else if (s == "=")
@@ -171,6 +174,17 @@ namespace Jeorje
                 if (char.IsLetterOrDigit(c))
                 {
                     return "ID";
+                }
+            }
+            else if (s == "//")
+            {
+                switch (c)
+                {
+                    case '\n':
+                        return String.Empty;
+                    
+                    default:
+                        return "//";
                 }
             }
 
