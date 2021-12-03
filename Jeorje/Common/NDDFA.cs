@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace Jeorje
 {
-    public static class DFA
+    public static class NDDFA
     {
         public static readonly string Start = "start";
         public static readonly HashSet<string> Accepting = new HashSet<string>()
@@ -31,7 +31,8 @@ namespace Jeorje
             "<",
             ">",
             "ID",
-            "mathOperator"
+            "mathOperator",
+            "whiteSpace",
         };
 
         public static string Transition((string, char) t)
@@ -95,6 +96,18 @@ namespace Jeorje
                     
                     case '/':
                         return "/";
+                    
+                    case ' ':
+                        return "whiteSpace";
+                    
+                    case '\n':
+                        return "whiteSpace";
+                    
+                    case '\t':
+                        return "whiteSpace";
+                    
+                    case '\r':
+                        return "whiteSpace";
                 }
             }
             else if (s == "=")

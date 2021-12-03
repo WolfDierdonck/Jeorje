@@ -19,7 +19,20 @@ namespace Jeorje
             Lexeme = lexeme;
             IsOperator = false;
         }
-        
+
+        public static bool operator ==(Token lhs, Token rhs)
+        {
+            if (lhs is null)
+            {
+                return rhs is null;
+            }
+            if (rhs is null)
+            {
+                return false;
+            }
+            return lhs.Lexeme == rhs.Lexeme && lhs.TokenType == rhs.TokenType;
+        }
+        public static bool operator !=(Token lhs, Token rhs) => !(lhs == rhs);            
         private TokenType ParseTokenType(string token)
         {
             switch (token)
