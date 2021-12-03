@@ -11,7 +11,8 @@ namespace Jeorje
             "imp_i",
             "forall_i",
             "exists_e",
-        }
+        };
+
         private static readonly List<string> _enterScopingRules = new List<string>()
         {
             "enter_raa",
@@ -19,15 +20,15 @@ namespace Jeorje
             "enter_imp_i",
             "enter_forall_i",
             "enter_exists_e",
-        }
+        };
 
         public static string ValidateND(List<AST> predicates, AST goal, List<NDRule> proof)
         {
-            var symbolTableStack = new Stack<SymbolTable>;
+            var symbolTableStack = new Stack<SymbolTable>();
             var currentSymbolTable = new SymbolTable();
             
             symbolTableStack.Push(currentSymbolTable);
-            for (var rule in proof)
+            foreach (var rule in proof)
             {
                 if (rule.CheckRule(symbolTableStack.Peek()))
                 {

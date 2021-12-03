@@ -99,23 +99,23 @@ namespace Jeorje
 
     public enum TokenType
     {
-        Not, // !
-        And, // &
-        Or, // |
+        Not, // ! 
+        And, // & 
+        Or, // | 
         Implies, // =>
         Iff, // <=>
         False, // false
         True, // true
         Forall, // forall
         Exists, // exists
-        Equal, // =
+        Equal, // = 
         NotEqual, // !=
-        Dot, // .
-        Colon, // :
-        LBrace, // {
-        RBrace, // }
-        LParen, // (
-        RParen, // )
+        Dot, // . 
+        Colon, // : 
+        LBrace, // { 
+        RBrace, // } 
+        LParen, // ( 
+        RParen, // ) 
         Identifier, // ???
         MathOperator, // +, - , *
         Comma, // ,
@@ -123,5 +123,10 @@ namespace Jeorje
         Hashtag, // #
         Entails, // |-
         DummyNotOperand, // $
+        LessEquals, // <=
+        GreaterEquals, // >=
+        LessThan, // < 
+        GreaterThan, // > 
+        Comment // lmao
     }
 }

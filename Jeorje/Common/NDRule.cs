@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Jeorje
 {
     public abstract class NDRule
@@ -5,7 +7,7 @@ namespace Jeorje
         public string Label;
         public string Name;
         public AST Predicate;
-        private List<string> Requirements;
-        public bool CheckRule(SymbolTable);
+        private List<string> _requirements;
+        public abstract bool CheckRule(SymbolTable symbolTable);
     }
 }

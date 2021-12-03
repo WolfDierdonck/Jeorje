@@ -36,7 +36,7 @@ namespace Jeorje
                         AST ndGoal = Parser.ParseLine(ndFormat.Goal);
                         List<AST> ndProof = Parser.ParseLines(ndFormat.Proof);
                         
-                        output = Validator.ValidateND(ndPredicates, ndGoal, ndProof);
+                        output = Validator.ValidateND(ndPredicates, ndGoal, null);
                         break;
                     
                     case CheckType.ST:
