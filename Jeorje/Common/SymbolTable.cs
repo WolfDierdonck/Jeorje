@@ -6,17 +6,23 @@ namespace Jeorje
     public class SymbolTable
     {
         public Dictionary<string, AST> Rules = new Dictionary<string, AST>();
-        public List<string> Identifiers = new List<string>();
+        public HashSet<string> Identifiers = new HashSet<string>();
 
         public void UpdateSymbols(string s, AST tree)
         {
             // Add (s, tree) to Rules;
             Rules.Add(s, tree);
             // Add identifiers in tree to Identifiers
-           	/*Identifiers.AddRange(tree.Children
-                .Where(child => child.Token.TokenType == TokenType.Identifier)
-                .Select(child => child.Token.Lexeme)
-            );*/ // TODO this is wrong, fix! (need recursion n shit)
+            void AddLeaves(AST node)
+            {
+                node.Children.ForEach(AddLeaves);
+                if (node.Token.TokenType == TokenType.Identifier)
+                {
+                    Identifiers.Add(node.Token.Lexeme);
+                }
+            }
+
+            AddLeaves(tree);
         } 
     }
 }
