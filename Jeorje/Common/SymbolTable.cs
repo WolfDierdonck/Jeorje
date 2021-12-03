@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Jeorje
 {
@@ -9,7 +10,13 @@ namespace Jeorje
 
         public void UpdateSymbols(string s, AST tree)
         {
-            // add (s, tree) to Rules; Add identifiers in tree to Identifiers
+            // Add (s, tree) to Rules;
+            Rules.Add(s, tree);
+            // Add identifiers in tree to Identifiers
+           	Identifiers.AddRange(tree.Children
+                .Where(child => child.Token.TokenType == TokenType.Identifier)
+                .Select(child => child.Token.Lexeme)
+            );
         } 
     }
 }

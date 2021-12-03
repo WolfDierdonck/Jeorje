@@ -2,12 +2,12 @@ using System.Collections.Generic;
 
 namespace Jeorje
 {
-    public abstract class NDRule
+    public interface NDRule
     {
-        public string Label;
-        public string Name;
-        public AST Predicate;
-        private List<string> _requirements;
-        public abstract bool CheckRule(SymbolTable symbolTable);
+        public string Label { get; set; }
+        public string Name { get; set; }
+        public AST Predicate { get; set; }
+        public List<string> Requirements { get; set; }
+        public bool CheckRule(SymbolTable symbolTable);
     }
 }
