@@ -36,7 +36,7 @@ namespace Jeorje
 
             while (i < tokens.Count)
             {
-                if (tokens[i].TokenType == TokenType.Or)
+                if (tokens[i].TokenType == TokenType.Not)
                 {
                     updatedTokens.Insert(i, new Token(TokenType.DummyNotOperand, "$"));
                     i++;

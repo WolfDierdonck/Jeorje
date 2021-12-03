@@ -30,7 +30,13 @@ namespace Jeorje
             
             var requirement = Requirements[0];
             var requirementAST = symbolTable.Statements[requirement];
-            return Predicate.Children.Contains(requirementAST);
+
+            if (!requirementAST.Children.Contains(Predicate))
+            {
+                throw new Exception("And_e didnt work");
+            }
+
+            return true;
         }
     }
 }

@@ -15,8 +15,8 @@ namespace Jeorje
                               "\n" +
                               "1) a & b premise\n" +
                               "2two) a => c premise\n" +
-                              "3three) a by and_e on 1\n" +
-                              "4) a | z by or_i on 3three\n"
+                              "3) a by and_e on 1\n" +
+                              "4) z | a | k by or_i on 3\n"
                               ;
             
             string output;

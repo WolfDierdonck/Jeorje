@@ -25,12 +25,18 @@ namespace Jeorje
         {
             if (Requirements.Count != 1)
             {
-                throw new Exception($"{_name} must be performed on one line");
+                throw new Exception($"Error on line with label {Label}: Incorrect # of arguments for rule or_i");
             }
 
             var requirement = Requirements[0];
             var requirementAST = symbolTable.Statements[requirement];
-            return requirementAST.Children.Contains(Predicate);
+
+            if (!(Predicate.Token.TokenType == TokenType.Or && Predicate.Children.Contains(requirementAST)))
+            {
+                throw new Exception($"Error on line with label {Label}: Didn't use or_i rule correctly");
+            }
+
+            return true;
         }
     }
 }

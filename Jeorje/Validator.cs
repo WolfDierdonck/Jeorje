@@ -42,7 +42,6 @@ namespace Jeorje
                     }
                     symbolTableStack.Peek().UpdateSymbols(rule.Label, rule.Predicate);
                 }
-
             }
             
 
