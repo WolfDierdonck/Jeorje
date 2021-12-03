@@ -11,12 +11,13 @@ namespace Jeorje
             var jeorjeInput = "this is just a test\n" +
                               "#check ND\n" +
                               "\n" +
-                              "a & b, a => c |- c\n" +
+                              "a & b, a => c |- a | z\n" +
                               "\n" +
-                              "1abcd) a & b premise\n" +
-                              "2) a => c premise\n" +
-                              "3) a by and_e on 1\n" +
-                              "4) c by imp_e on 2,3";
+                              "1) a & b premise\n" +
+                              "2two) a => c premise\n" +
+                              "3three) a by and_e on 1\n" +
+                              "4) a | z by or_i on 3three"
+                              ;
             
             string output;
 

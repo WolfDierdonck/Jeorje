@@ -5,13 +5,13 @@ namespace Jeorje
 {
     public class SymbolTable
     {
-        public Dictionary<string, AST> Rules = new Dictionary<string, AST>();
+        public Dictionary<string, AST> Statements = new Dictionary<string, AST>();
         public HashSet<string> Identifiers = new HashSet<string>();
 
         public void UpdateSymbols(string s, AST tree)
         {
             // Add (s, tree) to Rules;
-            Rules.Add(s, tree);
+            Statements.Add(s, tree);
             // Add identifiers in tree to Identifiers
             void AddLeaves(AST node)
             {
