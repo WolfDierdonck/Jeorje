@@ -12,6 +12,8 @@ namespace Jeorje
         {
             typeof(NDAndI),
             typeof(NDPremise),
+            typeof(NDAndE),
+            typeof(NDImpE)
         };
         
         public static List<NDRule> RulifyLines(List<Line> lines)
@@ -43,7 +45,7 @@ namespace Jeorje
             foreach (var ruleType in _ruleTypes)
             {
                 string currentRuleName = (string) 
-                    ruleType.GetField("Name", BindingFlags.Public | BindingFlags.Static).GetValue(null);
+                    ruleType.GetField("_name", BindingFlags.Public | BindingFlags.Static).GetValue(null);
 
                 if (currentRuleName == ruleName)
                 {
@@ -81,12 +83,12 @@ namespace Jeorje
                     
             while (i < tokens.Count)
             {
-                if (tokens[i].TokenType != TokenType.Identifier)
+                if (tokens[i].TokenType != TokenType.Label)
                 {
                     throw new Exception($"Invalid label {tokens[i].Lexeme}");
                 }
 
-                if (i < tokens.Count - 1 && (tokens[i + 1].Lexeme != "," || tokens[i + 1].Lexeme != "-"))
+                if (i < tokens.Count - 1 && tokens[i + 1].Lexeme != "," && tokens[i + 1].Lexeme != "-")
                 {
                     throw new Exception("Commas are required between line labels");
                 }

@@ -171,7 +171,7 @@ namespace Jeorje
             }
             else if (s == "ID")
             {
-                if (char.IsLetterOrDigit(c))
+                if (char.IsLetterOrDigit(c) || c == '_')
                 {
                     return "ID";
                 }

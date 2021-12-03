@@ -5,13 +5,13 @@ namespace Jeorje
     public class NDFormat : ProofFormat
     {
         public new CheckType CheckType = CheckType.ND;
-        public List<Line> Predicates;
+        public List<Line> Premises;
         public Line Goal;
         public List<Line> Proof;
         
-        public NDFormat(List<Line> predicates, Line goal, List<Line> proof)
+        public NDFormat(List<Line> premises, Line goal, List<Line> proof)
         {
-            Predicates = predicates;
+            Premises = premises;
             Goal = goal;
             Proof = proof;
         }

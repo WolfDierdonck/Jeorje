@@ -22,7 +22,7 @@ namespace Jeorje
             "enter_exists_e",
         };
 
-        public static string ValidateND(List<AST> predicates, AST goal, List<NDRule> proof)
+        public static string ValidateND(List<AST> premises, AST goal, List<NDRule> proof)
         {
             var symbolTableStack = new Stack<SymbolTable>();
             var currentSymbolTable = new SymbolTable();
@@ -30,7 +30,7 @@ namespace Jeorje
             symbolTableStack.Push(currentSymbolTable);
             foreach (var rule in proof)
             {
-                if (rule.CheckRule(symbolTableStack.Peek()))
+                if (rule.CheckRule(symbolTableStack.Peek(), premises))
                 {
                     if ( _enterScopingRules.Contains(rule.Name) )
                     {

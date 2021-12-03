@@ -11,10 +11,7 @@ namespace Jeorje
             var jeorjeInput = "this is just a test\n" +
                               "#check ND\n" +
                               "\n" +
-                              "a & b\n" +
-                              "a => c\n" +
-                              "|-\n" +
-                              "c\n" +
+                              "a & b, a => c |- c\n" +
                               "\n" +
                               "1abcd) a & b premise\n" +
                               "2) a => c premise\n" +
@@ -33,17 +30,18 @@ namespace Jeorje
                 {
                     case CheckType.ND:
                         var ndFormat = proofFormat as NDFormat;
-                        List<AST> ndPredicates = Parser.ParseLines(ndFormat.Predicates);
+                        List<AST> ndPremises = Parser.ParseLines(ndFormat.Premises);
                         AST ndGoal = Parser.ParseLine(ndFormat.Goal);
                         List<NDRule> ndProof = NDRulifier.RulifyLines(ndFormat.Proof);
                         
-                        output = Validator.ValidateND(ndPredicates, ndGoal, ndProof);
+                        output = Validator.ValidateND(ndPremises, ndGoal, ndProof);
                         break;
 
                     default:
                         throw new Exception($"check type {proofFormat.CheckType.ToString()} not supported yet");
                 }
             }
+            
             catch (Exception e)
             {
                 output = $"Exception thrown:\n{e.Message}";

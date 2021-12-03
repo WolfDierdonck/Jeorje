@@ -102,11 +102,7 @@ namespace Jeorje
 
                     if (char.IsDigit(kind[0]))
                     {
-                        if (int.TryParse(kind, out _))
-                        {
-                            return TokenType.Integer;
-                        }
-                        return TokenType.Label;
+                        return TokenType.Label; // TODO: we'll somehow have to distinguish between integers and labels
                     }
 
                     return TokenType.Identifier;
