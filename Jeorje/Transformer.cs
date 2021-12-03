@@ -39,11 +39,13 @@ namespace Jeorje
                 if (tokens[i].TokenType == TokenType.Or)
                 {
                     updatedTokens.Insert(i, new Token(TokenType.DummyNotOperand, "$"));
+                    i++;
                 }
                 else if (i < tokens.Count - 1 &&
                          tokens[i].TokenType == TokenType.Identifier && tokens[i + 1].TokenType == TokenType.LParen)
                 {
                     updatedTokens.Insert(i + 1, new Token(TokenType.FuncSeparator, "@"));
+                    i++;
                 }
 
                 i++;
