@@ -25,7 +25,12 @@ namespace Jeorje
         {
             if (Requirements.Count !=2)
             {
-                throw new Exception($"{_name} expecting 2 operands but received {Requirements.Count}");
+                throw new Exception($"Error on line with label {Label}: {_name} expecting 2 operands but received {Requirements.Count}");
+            }
+
+            if (Predicate.Token.TokenType != TokenType.Iff)
+            {
+                throw new Exception($"Error on line with label {Label}: outermost operand must be <=>");
             }
 
             var hyp1 = Predicate.Children[0]; // "P"
@@ -41,6 +46,11 @@ namespace Jeorje
             var imp1 = symbolTable.Statements[Requirements[0]];
             var imp2 = symbolTable.Statements[Requirements[1]];
 
+            if (imp1.Token.TokenType != TokenType.Implies || imp2.Token.TokenType != TokenType.Implies)
+            {
+                throw new Exception($"Error on line with label {Label}: Could not match any subrule of iff_i");
+            }
+
             if (imp1.Children[0] == hyp1 && imp1.Children[1] == hyp2 && imp2.Children[0] == hyp2 &&
                 imp2.Children[1] == hyp1)
             {
@@ -52,7 +62,7 @@ namespace Jeorje
             }
             else
             {
-                throw new Exception("Could not match any subrule of iff_i");
+                throw new Exception($"Error on line with label {Label}: Could not match any subrule of iff_i");
             }
             
             
