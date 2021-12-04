@@ -28,7 +28,9 @@ namespace Jeorje
                 throw new Exception($"Expecting 1 premise, got {Requirements.Count}");
             }
 
-            if (Requirements[0].Length != 3)
+            var requirements = Requirements[0].Split('-');
+
+            if (requirements.Length != 2)
             {
                 throw new Exception($"Expecting range of rules, got {Requirements[0]}");
             }
@@ -38,8 +40,8 @@ namespace Jeorje
                 throw new Exception($"Operand for imp_i must be implication");
             }
 
-            var impStartLabel = Requirements[0][0].ToString();
-            var impEndLabel = Requirements[0][2].ToString();
+            var impStartLabel = requirements[0];
+            var impEndLabel = requirements[1];
 
             if (symbolTable.Statements[impStartLabel] != Predicate.Children[0])
             {

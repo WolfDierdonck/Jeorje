@@ -12,16 +12,28 @@ namespace Jeorje
         {
             var jeorjeInput = @"
 #check ND
+a => b, a | c, c <=> b,!b |- c <=> a
 
-a
-|-
-x & y => x
+1) a => b premise
+2) a | c premise
+3) c <=> b premise
+4) !b premise
 
-1) a                   premise
-2) assume x & y {
-    3) x                by and_e on 2
+5) assume c {
+    6) c => b by iff_e on 3
+    7) b by imp_e on 6,5
+    8) a by not_e on 4,7
 }
-4) x & y => y            by imp_i on 2-3
+
+10) assume a {
+    11) b by imp_e on 1,10
+    12) b => c by iff_e on 3
+    13) c by imp_e on 11,12
+}
+
+9) c => a by imp_i on 5-8
+14) a => c by imp_i on 10-13
+15) c <=> a by iff_i on 9,14
                 ";
 
             Console.WriteLine(AskJeorje(jeorjeInput));

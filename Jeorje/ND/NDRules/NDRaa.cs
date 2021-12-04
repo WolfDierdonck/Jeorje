@@ -28,13 +28,15 @@ namespace Jeorje
                 throw new Exception($"Expecting 1 premise, got {Requirements.Count}");
             }
 
-            if (Requirements[0].Length != 3)
+            var requirements = Requirements[0].Split('-');
+
+            if (requirements.Length != 2)
             {
                 throw new Exception($"Expecting range of rules, got {Requirements[0]}");
             }
             
-            var raaStartLabel = Requirements[0][0].ToString();
-            var raaEndLabel = Requirements[0][2].ToString();
+            var raaStartLabel = requirements[0].ToString();
+            var raaEndLabel = requirements[1].ToString();
 
             if (Predicate.Token.TokenType != TokenType.Not && symbolTable.Statements[raaStartLabel].Token.TokenType != TokenType.Not)
             {

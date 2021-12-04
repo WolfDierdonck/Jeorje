@@ -47,7 +47,7 @@ namespace Jeorje
                     currentSymbolTable = new SymbolTable(new Dictionary<string, AST>(symbolTableStack.Peek().Statements), new HashSet<string>(symbolTableStack.Peek().Identifiers));
                     foreach (var requirement in rule.Requirements)
                     {
-                        if (requirement.Length == 3)
+                        if (requirement.Split('-').Length == 2)
                         {
                             if (!closedSymbolTables.ContainsKey(requirement))
                             {
