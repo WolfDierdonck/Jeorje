@@ -28,7 +28,10 @@ namespace Jeorje
             typeof(NDEnterImpI),
             typeof(NDImpI),
             typeof(NDIffE),
-            typeof(NDIffMP)
+            typeof(NDIffMP),
+             typeof(NDNotE),
+            typeof(NDNotNotE),
+            typeof(NDNotNotI)
         };
         
         public static List<NDRule> RulifyLines(List<Line> lines)
