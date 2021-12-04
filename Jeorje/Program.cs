@@ -10,15 +10,31 @@ namespace Jeorje
     {
         static void Main(string[] args)
         {
-            var jeorjeInput = "this is just a test\n" +
-                              "#check ND\n" +
-                              "!a\n" +
-                              "|-\n" +
-                              "z | !z\n" +
-                              "\n" +
-                              "0) !a premise\n" +
-                              "1) !z | z by lem\n" 
-                              ;
+
+
+
+            var jeorjeInput = @"
+                #check ND
+b,
+a => !b
+|- 
+!a
+
+1) b premise
+2) a => !b premise
+3) !a by imp_e on 1, 2
+                "; 
+                    
+                    
+                    // "this is just a test\n" +
+                    //           "#check ND\n" +
+                    //           "!a\n" +
+                    //           "|-\n" +
+                    //           "z | !z\n" +
+                    //           "\n" +
+                    //           "0) !a premise\n" +
+                    //           "1) !z | z by lem\n" 
+                    //           ;
             
             string output;
             
