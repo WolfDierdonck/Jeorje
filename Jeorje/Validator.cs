@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Jeorje
 {
@@ -43,8 +45,12 @@ namespace Jeorje
                     symbolTableStack.Peek().UpdateSymbols(rule.Label, rule.Predicate);
                 }
             }
-            
 
+            if (goal != proof.Last().Predicate)
+            {
+                throw new Exception("Last line of ND proof does not match goal! ");
+            } 
+            
             return "ND Proof is valid";
         }
 
