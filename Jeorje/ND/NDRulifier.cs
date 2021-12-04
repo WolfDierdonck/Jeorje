@@ -17,6 +17,7 @@ namespace Jeorje
             typeof(NDOrI),
             typeof(NDLem),
             typeof(NDOrE),
+            typeof(NDTrue),
         };
         
         public static List<NDRule> RulifyLines(List<Line> lines)
