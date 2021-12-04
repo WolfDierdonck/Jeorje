@@ -21,9 +21,6 @@ namespace Jeorje
         }
         public override bool CheckRule(SymbolTable symbolTable, List<AST> premises)
         {
-            var reqA = symbolTable.Statements[Requirements[0]];
-            var reqB = symbolTable.Statements[Requirements[1]];
-            
             var reqPool = new HashSet<AST> {};
             Requirements.ForEach(r => reqPool.Add(symbolTable.Statements[r]));
                 
