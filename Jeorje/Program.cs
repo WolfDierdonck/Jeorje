@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace Jeorje
@@ -10,17 +12,16 @@ namespace Jeorje
         {
             var jeorjeInput = "this is just a test\n" +
                               "#check ND\n" +
+                              "!a\n" +
+                              "|-\n" +
+                              "z | !z\n" +
                               "\n" +
-                              "a & b, a => c |- a | z\n" +
-                              "\n" +
-                              "1) a & b premise\n" +
-                              "2two) a => c premise\n" +
-                              "3) a by and_e on 1\n" +
-                              "4) z | a | k by or_i on 3\n"
+                              "0) !a premise\n" +
+                              "1) !z | z by lem\n" 
                               ;
             
             string output;
-
+            
             try
             {
                 var tokens = Scanner.MaximalMunchScan(jeorjeInput);
