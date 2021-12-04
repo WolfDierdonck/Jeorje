@@ -21,7 +21,8 @@ namespace Jeorje
             typeof(NDMagic),
             typeof(NDArith),
             typeof(NDSet),
-            typeof(NDTrans)
+            typeof(NDTrans),
+            typeof(NDIffI)
         };
         
         public static List<NDRule> RulifyLines(List<Line> lines)
