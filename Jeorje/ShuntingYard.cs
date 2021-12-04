@@ -34,7 +34,7 @@ namespace Jeorje
             {TokenType.Comma, true},
             {TokenType.FuncSeparator, false},
             {TokenType.MathOperator, false},
-            {TokenType.Not, false},
+            {TokenType.Not, true},
             {TokenType.And, true},
             {TokenType.Or, true},
             {TokenType.Implies, false},
