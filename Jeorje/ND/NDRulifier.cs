@@ -26,12 +26,17 @@ namespace Jeorje
             typeof(NDLBrace),
             typeof(NDRBrace),
             typeof(NDEnterImpI),
+            typeof(NDEnterRaa),
+            typeof(NDEnterForallI),
+            typeof(NDEnterExistsE),
+            typeof(NDCase),
             typeof(NDImpI),
             typeof(NDIffE),
             typeof(NDIffMP),
-             typeof(NDNotE),
+            typeof(NDNotE),
             typeof(NDNotNotE),
-            typeof(NDNotNotI)
+            typeof(NDNotNotI),
+            typeof(NDRaa)
         };
         
         public static List<NDRule> RulifyLines(List<Line> lines)
@@ -79,10 +84,10 @@ namespace Jeorje
                         return new NDEnterImpI(label, predicate, null);
                     case "disprove":
                         Logger.RemoveError();
-                        return null;
+                        return new NDEnterRaa(label, predicate, null);
                     case "case":
                         Logger.RemoveError();
-                        return null;
+                        return new NDCase(label, predicate, null);
                     default:
                         throw new Exception($"Error on line with label {label}: invalid syntax");
                 };

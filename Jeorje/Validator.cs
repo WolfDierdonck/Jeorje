@@ -26,7 +26,7 @@ namespace Jeorje
 
         private static readonly Dictionary<string, string> _enterToExit = new Dictionary<string, string>()
         {
-            {"enter_raa", "raa"}, {"enter_cases", "cases"}, {"enter_imp_i", "imp_i"}, {"enter_forall_i", "forall_i"}, {"enter_exists_e", "exists_e"}
+            {"enter_raa", "raa"}, {"case", "cases"}, {"enter_imp_i", "imp_i"}, {"enter_forall_i", "forall_i"}, {"enter_exists_e", "exists_e"}
         };
 
         public static string ValidateND(List<AST> premises, AST goal, List<NDRule> proof)
@@ -92,7 +92,6 @@ namespace Jeorje
                             throw new Exception("No matching '{' found for '}'");
                         }
                         var scopeInfo = scopesStack.Pop();
-                        Console.WriteLine($"{scopeInfo.Item2}-{lastLabel}");
                         closedSymbolTables.Add($"{scopeInfo.Item2}-{lastLabel}", new Tuple<SymbolTable, string>(symbolTableStack.Pop(), scopeInfo.Item1));
                     }
                     else
