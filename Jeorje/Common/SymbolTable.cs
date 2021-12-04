@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -33,6 +34,14 @@ namespace Jeorje
             }
 
             AddLeaves(tree);
-        } 
+        }
+        public AST GetStatement(string s)
+        {
+            if (!Statements.ContainsKey(s))
+            {
+                throw new Exception($"Error on line: Step depends on proof lines {s} which are not active lines at this point in the proof");
+            }
+            return Statements[s];
+        }
     }
 }
