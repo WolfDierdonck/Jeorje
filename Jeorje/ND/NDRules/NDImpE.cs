@@ -116,7 +116,7 @@ namespace Jeorje
                 if (implication.Children[0] == conditional)
                 {
                     // conditional is hypothesis
-                    if (Predicate != implication.Children[0])
+                    if (Predicate != implication.Children[1])
                     {
                         throw new Exception("Arguments do not match any subrule of imp_e");
                     }
