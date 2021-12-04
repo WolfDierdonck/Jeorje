@@ -17,9 +17,7 @@ namespace Jeorje
 
         private static readonly List<string> _enterScopingRules = new List<string>()
         {
-            "enter_raa",
-            "enter_cases",
-            "enter_imp_i",
+            "lbrace",
             "enter_forall_i",
             "enter_exists_e",
         };

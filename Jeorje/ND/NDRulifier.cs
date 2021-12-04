@@ -23,6 +23,7 @@ namespace Jeorje
             typeof(NDSet),
             typeof(NDTrans),
             typeof(NDIffI),
+            typeof(NDLBrace),
             typeof(NDRBrace),
             typeof(NDEnterImpI)
         };
@@ -36,6 +37,11 @@ namespace Jeorje
         {
             Logger.AddError($"Latest: Rulifying line {line}");
             
+            if (line.Tokens[0].TokenType == TokenType.LBrace)
+            {
+                Logger.RemoveError();
+                return new NDLBrace("lbrace", null, null);
+            }
             if (line.Tokens[0].TokenType == TokenType.RBrace)
             {
                 Logger.RemoveError();
@@ -48,12 +54,33 @@ namespace Jeorje
             
             var label = line.Tokens[0].Lexeme;
 
-            var endIndex = line.Tokens.FindIndex(token => token.Lexeme == "by" || token.Lexeme == "premise" || token.TokenType == TokenType.LBrace);
+            var endIndex = line.Tokens.FindIndex(token => token.Lexeme == "by" || token.Lexeme == "premise");
+            var beginIndex = 2;
+            var scopedRule = endIndex == -1;
 
-            var beginIndex = line.Tokens[endIndex].TokenType == TokenType.LBrace ? 3 : 2;
-
+            if (scopedRule)
+            {
+                beginIndex = 3;
+                endIndex = line.Tokens.Count;
+            }
             var predicate = Parser.ParseLine(new Line(line.Tokens.GetRange(beginIndex, endIndex - beginIndex)));
-
+            if (scopedRule)
+            {
+                switch (line.Tokens[2].Lexeme)
+                {
+                    case "assume":
+                        Logger.RemoveError();
+                        return new NDEnterImpI(label, predicate, null);
+                    case "disprove":
+                        Logger.RemoveError();
+                        return null;
+                    case "case":
+                        Logger.RemoveError();
+                        return null;
+                    default:
+                        throw new Exception($"Error on line with label {label}: invalid syntax");
+                };
+            }
             if (line.Tokens[endIndex].Lexeme == "premise")
             {
                 Logger.RemoveError();

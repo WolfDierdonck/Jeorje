@@ -11,16 +11,17 @@ namespace Jeorje
         static void Main(string[] args)
         {
             var jeorjeInput = @"
-                    #check ND
+#check ND
 
-                    a <=> b,
-                    c <=> b
-                    |-
-                    a <=> c
+x
+|-
+x & y => x
 
-                    1) a <=> b premise
-                    2) c <=> b premise
-                    3) a <=> c by trans on 1, 2
+1) x                    premise
+2) assume x & y {
+	3) x    			by and_e on 2
+}
+4) x & y => x			by imp_i on 3-4
                 ";
 
             Console.WriteLine(AskJeorje(jeorjeInput));
