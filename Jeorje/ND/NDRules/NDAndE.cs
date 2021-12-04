@@ -33,7 +33,7 @@ namespace Jeorje
 
             if (!requirementAST.Children.Contains(Predicate))
             {
-                throw new Exception("And_e didnt work");
+                throw new Exception($"Error on line with label {Label}: and_e used incorrectly");
             }
 
             return true;
