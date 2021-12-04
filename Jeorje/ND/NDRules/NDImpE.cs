@@ -116,7 +116,10 @@ namespace Jeorje
                 if (implication.Children[0] == conditional)
                 {
                     // conditional is hypothesis
-                    return Predicate == implication.Children[0];
+                    if (Predicate != implication.Children[0])
+                    {
+                        throw new Exception("Arguments do not match any subrule of imp_e");
+                    }
                 } 
                 // else if (implication.Children[1] == conditional)
                 // {
@@ -127,18 +130,25 @@ namespace Jeorje
                 else if (implication.Children[1].Token.TokenType != TokenType.Not && conditional.Token.TokenType == TokenType.Not && conditional.Children[1] == implication.Children[1])
                 {
                     // conditional is negation of nonnegated conclusion
-                    return Predicate.Token.TokenType == TokenType.Not && Predicate.Children[1] == implication.Children[0];
-                }  else if (implication.Children[1].Token.TokenType == TokenType.Not && implication.Children[1].Children[1] == conditional)
+                    if (!(Predicate.Token.TokenType == TokenType.Not && Predicate.Children[1] == implication.Children[0]))
+                    {
+                        throw new Exception("Arguments do not match any subrule of imp_e");
+                    }
+                }  
+                else if (implication.Children[1].Token.TokenType == TokenType.Not && implication.Children[1].Children[1] == conditional)
                 {
                     // conditional is negation of negated conclusion
-                    return Predicate.Token.TokenType == TokenType.Not && Predicate.Children[1] == implication.Children[0];
-                    return true;
+                    if (!(Predicate.Token.TokenType == TokenType.Not && Predicate.Children[1] == implication.Children[0]))
+                    {
+                        throw new Exception("Arguments do not match any subrule of imp_e");
+                    }
                 }
                 else
                 {
                     // oopsie
                     throw new Exception("Arguments do not match any subrule of imp_e");
                 }
+                return true;
         }
     }
 }
