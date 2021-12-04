@@ -14,15 +14,16 @@ namespace Jeorje
 
 
             var jeorjeInput = @"
-                #check ND
-b,
-a => !b
-|- 
-!a
+#check ND
 
-1) b premise
-2) a => !b premise
-3) !a by imp_e on 1, 2
+a <=> b,
+c <=> b
+|-
+a <=> c
+
+1) a <=> b premise
+2) c <=> b premise
+3) a <=> c by trans on 1, 2
                 "; 
                     
                     
