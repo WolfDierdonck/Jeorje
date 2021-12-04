@@ -1,8 +1,9 @@
+using System;
 using System.Text;
 
 namespace Jeorje
 {
-    public class Token
+    public class Token : IEquatable<Token>
     {
         public TokenType TokenType;
         public string Lexeme;
@@ -123,26 +124,23 @@ namespace Jeorje
                     return false;
                 case TokenType.Exists:
                     return false;
+                case TokenType.DummyNotOperand:
+                    return false;
 
                 default:
                     return true;
             }
         } 
         
-        public static bool operator ==(Token lhs, Token rhs)
+        public bool Equals(Token other)
         {
-            if (lhs is null)
-            {
-                return rhs is null;
-            }
-            if (rhs is null)
+            if (other is null)
             {
                 return false;
             }
-            return lhs.Lexeme == rhs.Lexeme && lhs.TokenType == rhs.TokenType;
-        }
-        public static bool operator !=(Token lhs, Token rhs) => !(lhs == rhs);            
-        
+            return Lexeme == other.Lexeme && TokenType == other.TokenType;
+        }            
+
     }
 
     public enum TokenType
