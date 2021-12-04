@@ -66,17 +66,19 @@ namespace Jeorje
                     // first is top level implication, second is hypothesis
                     conditional = second;
                     implication = first;
-                } else if (second.Children[1] == first)
-                {
-                    // second is top level implication, first is conclusion
-                    conditional = first;
-                    implication = second;
-                } else if (first.Children[1] == second)
-                {
-                    // first is top level implication, second is conclusion
-                    conditional = second;
-                    implication = first;
-                } else if (second.Children[1].Token.TokenType != TokenType.Not && first.Token.TokenType == TokenType.Not && first.Children[1] == second.Children[1])
+                }
+                // else if (second.Children[1] == first)
+                // {
+                //     // second is top level implication, first is conclusion
+                //     conditional = first;
+                //     implication = second;
+                // } else if (first.Children[1] == second)
+                // {
+                //     // first is top level implication, second is conclusion
+                //     conditional = second;
+                //     implication = first;
+                // }
+                else if (second.Children[1].Token.TokenType != TokenType.Not && first.Token.TokenType == TokenType.Not && first.Children[1] == second.Children[1])
                 {
                     // second is top level implication, first is negation of nonegated conclusion
                     conditional = first;
@@ -114,18 +116,22 @@ namespace Jeorje
                 if (implication.Children[0] == conditional)
                 {
                     // conditional is hypothesis
-                    return true;
-                } else if (implication.Children[1] == conditional)
-                {
-                    // conditional is conclusion
-                    return true;
-                } else if (implication.Children[1].Token.TokenType != TokenType.Not && conditional.Token.TokenType == TokenType.Not && conditional.Children[1] == implication.Children[1])
+                    return Predicate == implication.Children[0];
+                } 
+                // else if (implication.Children[1] == conditional)
+                // {
+                //     // conditional is conclusion
+                //     return Predicate == implication.Children[0];
+                //     return true;
+                // }
+                else if (implication.Children[1].Token.TokenType != TokenType.Not && conditional.Token.TokenType == TokenType.Not && conditional.Children[1] == implication.Children[1])
                 {
                     // conditional is negation of nonnegated conclusion
-                    return true;
+                    return Predicate.Token.TokenType == TokenType.Not && Predicate.Children[1] == implication.Children[0];
                 }  else if (implication.Children[1].Token.TokenType == TokenType.Not && implication.Children[1].Children[1] == conditional)
                 {
                     // conditional is negation of negated conclusion
+                    return Predicate.Token.TokenType == TokenType.Not && Predicate.Children[1] == implication.Children[0];
                     return true;
                 }
                 else
