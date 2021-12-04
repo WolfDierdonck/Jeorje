@@ -15,14 +15,13 @@ namespace Jeorje
 
 a
 |-
-x
+x & y => x
 
 1) a                   premise
 2) assume x & y {
     3) x                by and_e on 2
 }
-4) x & y => x            by imp_i on 2-3
-5) x by and_e on 2
+4) x & y => y            by imp_i on 2-3
                 ";
 
             Console.WriteLine(AskJeorje(jeorjeInput));

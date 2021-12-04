@@ -28,6 +28,28 @@ namespace Jeorje
                 throw new Exception($"Expecting 1 premise, got {Requirements.Count}");
             }
 
+            if (Requirements[0].Length != 3)
+            {
+                throw new Exception($"Expecting range of rules, got {Requirements[0]}");
+            }
+
+            if (Predicate.Token.TokenType != TokenType.Implies)
+            {
+                throw new Exception($"Operand for imp_i must be implication");
+            }
+
+            var impStartLabel = Requirements[0][0].ToString();
+            var impEndLabel = Requirements[0][2].ToString();
+
+            if (symbolTable.Statements[impStartLabel] != Predicate.Children[0])
+            {
+                throw new Exception($"Hypotheses for imp_i don't match");
+            }
+            if (symbolTable.Statements[impEndLabel] != Predicate.Children[1])
+            {
+                throw new Exception($"Conclusions for imp_i don't match");
+            }
+
             return true;
         }
     }
