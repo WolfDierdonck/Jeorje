@@ -25,7 +25,8 @@ namespace Jeorje
             typeof(NDIffI),
             typeof(NDLBrace),
             typeof(NDRBrace),
-            typeof(NDEnterImpI)
+            typeof(NDEnterImpI),
+            typeof(NDImpI)
         };
         
         public static List<NDRule> RulifyLines(List<Line> lines)
@@ -85,23 +86,6 @@ namespace Jeorje
             {
                 Logger.RemoveError();
                 return new NDPremise(label, predicate, null);
-            }
-            if (line.Tokens[endIndex].TokenType == TokenType.LBrace)
-            {
-                switch (line.Tokens[2].Lexeme)
-                {
-                    case "assume":
-                        Logger.RemoveError();
-                        return new NDEnterImpI(label, predicate, null);
-                    case "disprove":
-                        Logger.RemoveError();
-                        return null;
-                    case "case":
-                        Logger.RemoveError();
-                        return null;
-                    default:
-                        throw new Exception($"Error on line with label {label}: invalid syntax");
-                };
             }
 
             (string ruleName, List<string> requirements) = GetRequirements(line.Tokens.GetRange(endIndex, line.Tokens.Count - endIndex), label);

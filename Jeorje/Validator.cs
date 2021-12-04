@@ -17,15 +17,20 @@ namespace Jeorje
 
         private static readonly List<string> _enterScopingRules = new List<string>()
         {
-            "lbrace",
+            "enter_raa",
+            "enter_cases",
+            "enter_imp_i",
             "enter_forall_i",
             "enter_exists_e",
         };
-
+        
         public static string ValidateND(List<AST> premises, AST goal, List<NDRule> proof)
         {
             var symbolTableStack = new Stack<SymbolTable>();
             var currentSymbolTable = new SymbolTable();
+            var scopesStack = new Stack<string>();
+            var shouldEnterScope = false;
+            var justExitedScopeName = "";
             
             symbolTableStack.Push(currentSymbolTable);
             foreach (var rule in proof)
@@ -33,16 +38,42 @@ namespace Jeorje
                 Logger.AddError($"Latest: Checking line with label ${rule.Label}");
                 if (rule.CheckRule(symbolTableStack.Peek(), premises))
                 {
-                    if ( _enterScopingRules.Contains(rule.Name) )
+                    if (shouldEnterScope && rule.Name != "lbrace")
                     {
-                        symbolTableStack.Push(symbolTableStack.Peek());
+                        throw new Exception($"Error on line {rule.Label}: Missing '{{'");
+                    }
+                    else if ( _enterScopingRules.Contains(rule.Name) )
+                    {
+                        scopesStack.Push(rule.Name);
+                        shouldEnterScope = true;
                     }
                     else if ( _exitScopingRules.Contains(rule.Name) )
                     {
-                        symbolTableStack.Pop();
+                        if (justExitedScopeName == "")
+                        {
+                            throw new Exception($"Error on line {rule.Label}: Missing '}}'");
+                        }
+                        justExitedScopeName = "";
                     }
-
-                    if (rule.Name != "rbrace")
+                    if (rule.Name == "lbrace")
+                    {
+                        if (!shouldEnterScope)
+                        {
+                            throw new Exception("Invalid use of '{'");
+                        }
+                        symbolTableStack.Push(symbolTableStack.Peek());
+                        shouldEnterScope = false;
+                    }
+                    else if (rule.Name == "rbrace")
+                    {
+                        if (scopesStack.Count == 0)
+                        {
+                            throw new Exception("Invalid use of '}'");
+                        }
+                        symbolTableStack.Pop();
+                        justExitedScopeName = scopesStack.Pop();
+                    }
+                    else
                     {
                         symbolTableStack.Peek().UpdateSymbols(rule.Label, rule.Predicate);
                     }
