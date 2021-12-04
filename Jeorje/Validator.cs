@@ -43,7 +43,11 @@ namespace Jeorje
                     {
                         symbolTableStack.Pop();
                     }
-                    symbolTableStack.Peek().UpdateSymbols(rule.Label, rule.Predicate);
+
+                    if (rule.Name != "rbrace")
+                    {
+                        symbolTableStack.Peek().UpdateSymbols(rule.Label, rule.Predicate);
+                    }
                     Logger.RemoveError();
                 }
             }
