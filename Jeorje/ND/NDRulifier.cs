@@ -38,6 +38,7 @@ namespace Jeorje
             
             if (line.Tokens[0].TokenType == TokenType.RBrace)
             {
+                Logger.RemoveError();
                 return new NDRBrace("rbrace", null, null);
             }
             if (line.Tokens[0].TokenType != TokenType.Label)
@@ -60,12 +61,19 @@ namespace Jeorje
             }
             if (line.Tokens[endIndex].TokenType == TokenType.LBrace)
             {
-                return line.Tokens[2].Lexeme switch
+                switch (line.Tokens[2].Lexeme)
                 {
-                    "assume" => new NDEnterImpI(label, predicate, null),
-                    "case" => null,
-                    "disprove" => null,
-                    _ => throw new Exception($"Error on line with label {label}: invalid syntax")
+                    case "assume":
+                        Logger.RemoveError();
+                        return new NDEnterImpI(label, predicate, null);
+                    case "disprove":
+                        Logger.RemoveError();
+                        return null;
+                    case "case":
+                        Logger.RemoveError();
+                        return null;
+                    default:
+                        throw new Exception($"Error on line with label {label}: invalid syntax");
                 };
             }
 
