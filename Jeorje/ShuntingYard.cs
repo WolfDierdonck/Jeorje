@@ -34,7 +34,7 @@ namespace Jeorje
             {TokenType.Comma, true},
             {TokenType.FuncSeparator, false},
             {TokenType.MathOperator, false},
-            {TokenType.Not, true},
+            {TokenType.Not, false},
             {TokenType.And, true},
             {TokenType.Or, true},
             {TokenType.Implies, false},
@@ -53,15 +53,15 @@ namespace Jeorje
                 Token popped;
                 switch (t.TokenType)
                 {
-                    case TokenType.LBrace:
+                    case TokenType.LParen:
                         operatorStack.Push(t);
                         break;
-                    case TokenType.RBrace:
+                    case TokenType.RParen:
                         var endOuterLoop = false;
                         while (operatorStack.Count != 0)
                         {
                             popped = operatorStack.Pop();
-                            if (popped.TokenType == TokenType.LBrace)
+                            if (popped.TokenType == TokenType.LParen)
                             {
                                 endOuterLoop = true; 
                             }
@@ -84,7 +84,7 @@ namespace Jeorje
                             Token o2;
                             while (operatorStack.Count != 0 && null != (o2 = operatorStack.Peek()))
                             {
-                                if (!_operatorRightAssociative[o1.TokenType] && !greaterPrecedence(o1, o2))
+                                if (!_operatorRightAssociative[o1.TokenType] || !greaterPrecedence(o1, o2))
                                 {
                                     operatorStack.Pop();
                                     addNode(operandStack, o2);
