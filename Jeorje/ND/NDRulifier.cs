@@ -22,7 +22,9 @@ namespace Jeorje
             typeof(NDArith),
             typeof(NDSet),
             typeof(NDTrans),
-            typeof(NDIffI)
+            typeof(NDIffI),
+            typeof(NDRBrace),
+            typeof(NDEnterImpI)
         };
         
         public static List<NDRule> RulifyLines(List<Line> lines)
@@ -32,6 +34,10 @@ namespace Jeorje
 
         public static NDRule RulifyLine(Line line)
         {
+            if (line.Tokens[0].TokenType == TokenType.RBrace)
+            {
+                return new NDRBrace("rbrace", null, null);
+            }
             if (line.Tokens[0].TokenType != TokenType.Label)
             {
                 throw new Exception("Beginning of line was not a label");
@@ -39,13 +45,25 @@ namespace Jeorje
             
             var label = line.Tokens[0].Lexeme;
 
-            var endIndex = line.Tokens.FindIndex(token => token.Lexeme == "by" || token.Lexeme == "premise");
+            var endIndex = line.Tokens.FindIndex(token => token.Lexeme == "by" || token.Lexeme == "premise" || token.TokenType == TokenType.LBrace);
 
-            var predicate = Parser.ParseLine(new Line(line.Tokens.GetRange(2, endIndex - 2)));
+            var beginIndex = line.Tokens[endIndex].TokenType == TokenType.LBrace ? 3 : 2;
+
+            var predicate = Parser.ParseLine(new Line(line.Tokens.GetRange(beginIndex, endIndex - beginIndex)));
 
             if (line.Tokens[endIndex].Lexeme == "premise")
             {
                 return new NDPremise(label, predicate, null);
+            }
+            if (line.Tokens[endIndex].TokenType == TokenType.LBrace)
+            {
+                return line.Tokens[2].Lexeme switch
+                {
+                    "assume" => new NDEnterImpI(label, predicate, null),
+                    "case" => null,
+                    "disprove" => null,
+                    _ => throw new Exception($"Error on line with label {label}: invalid syntax")
+                };
             }
 
             (string ruleName, List<string> requirements) = GetRequirements(line.Tokens.GetRange(endIndex, line.Tokens.Count - endIndex), label);
@@ -89,7 +107,7 @@ namespace Jeorje
             
             var i = 3;
             var requirements = new List<string>();
-                    
+
             while (i < tokens.Count)
             {
                 if (tokens[i].TokenType != TokenType.Label)

@@ -8,9 +8,7 @@ namespace Jeorje
     {
         private static readonly List<string> _exitScopingRules = new List<string>()
         {
-            "raa",
-            "cases",
-            "imp_i",
+            "rbrace",
             "forall_i",
             "exists_e",
         };
@@ -42,7 +40,11 @@ namespace Jeorje
                     {
                         symbolTableStack.Pop();
                     }
-                    symbolTableStack.Peek().UpdateSymbols(rule.Label, rule.Predicate);
+
+                    if (rule.Name != "rbrace")
+                    {
+                        symbolTableStack.Peek().UpdateSymbols(rule.Label, rule.Predicate);
+                    }
                 }
             }
 
