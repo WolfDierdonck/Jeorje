@@ -34,6 +34,8 @@ namespace Jeorje
 
         public static NDRule RulifyLine(Line line)
         {
+            Logger.AddError($"Latest: Rulifying line {line}");
+            
             if (line.Tokens[0].TokenType == TokenType.RBrace)
             {
                 return new NDRBrace("rbrace", null, null);
@@ -53,6 +55,7 @@ namespace Jeorje
 
             if (line.Tokens[endIndex].Lexeme == "premise")
             {
+                Logger.RemoveError();
                 return new NDPremise(label, predicate, null);
             }
             if (line.Tokens[endIndex].TokenType == TokenType.LBrace)
@@ -76,6 +79,7 @@ namespace Jeorje
 
                 if (currentRuleName == ruleName)
                 {
+                    Logger.RemoveError();
                     return (NDRule) Activator.CreateInstance(ruleType, label, predicate, requirements);
                 }
             }

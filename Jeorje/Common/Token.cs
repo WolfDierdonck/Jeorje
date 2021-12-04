@@ -155,8 +155,12 @@ namespace Jeorje
             return lhs.Equals(rhs);
         }
 
-        public static bool operator !=(Token lhs, Token rhs) => !(lhs == rhs);            
+        public static bool operator !=(Token lhs, Token rhs) => !(lhs == rhs);
 
+        public override string ToString()
+        {
+            return Lexeme;
+        }
     }
 
     public enum TokenType

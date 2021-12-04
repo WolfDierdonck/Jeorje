@@ -8,7 +8,9 @@ namespace Jeorje
     {
         private static readonly List<string> _exitScopingRules = new List<string>()
         {
-            "rbrace",
+            "raa",
+            "cases",
+            "imp_i",
             "forall_i",
             "exists_e",
         };
@@ -30,6 +32,7 @@ namespace Jeorje
             symbolTableStack.Push(currentSymbolTable);
             foreach (var rule in proof)
             {
+                Logger.AddError($"Latest: Checking line with label ${rule.Label}");
                 if (rule.CheckRule(symbolTableStack.Peek(), premises))
                 {
                     if ( _enterScopingRules.Contains(rule.Name) )
@@ -45,6 +48,7 @@ namespace Jeorje
                     {
                         symbolTableStack.Peek().UpdateSymbols(rule.Label, rule.Predicate);
                     }
+                    Logger.RemoveError();
                 }
             }
 

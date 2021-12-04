@@ -13,5 +13,10 @@ namespace Jeorje
         {
             Tokens = tokens;
         }
+
+        public override string ToString()
+        {
+            return string.Join(" ", Tokens);
+        }
     }
 }

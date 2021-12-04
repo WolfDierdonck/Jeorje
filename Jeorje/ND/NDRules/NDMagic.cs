@@ -27,6 +27,8 @@ namespace Jeorje
                 throw new Exception($"{_name} must be performed on 0 lines");
             }
             
+            Logger.AddWarning($"Rule magic used on line with label {Label}");
+            
             return true;
         }
     }

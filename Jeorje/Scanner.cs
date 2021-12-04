@@ -86,7 +86,7 @@ namespace Jeorje
           
           if (toAdd.Item1 == input)
           {
-            throw new Exception($"Input is not in DFA at {input}" );
+            throw new Exception($"Scanning failed at: {input}" );
           }
           
           accumulator.Add(new Token(toAdd.Item2,new string(ListDiff(input, toAdd.Item1).ToArray())));
