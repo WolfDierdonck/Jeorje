@@ -86,7 +86,7 @@ namespace Jeorje
           
           if (toAdd.Item1 == input)
           {
-            throw new Exception($"Scanning failed at: {input}" );
+            throw new Exception($"Scanning failed at: \n{new string(input.ToArray())}" );
           }
           
           accumulator.Add(new Token(toAdd.Item2,new string(ListDiff(input, toAdd.Item1).ToArray())));
