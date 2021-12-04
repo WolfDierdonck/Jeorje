@@ -13,15 +13,16 @@ namespace Jeorje
             var jeorjeInput = @"
 #check ND
 
-x
+a
 |-
-x & y => x
+x
 
-1) x                    premise
+1) a                   premise
 2) assume x & y {
-	3) x    			by and_e on 2
+    3) x                by and_e on 2
 }
-4) x & y => x			by imp_i on 3-4
+4) x & y => x            by imp_i on 2-3
+5) x by and_e on 2
                 ";
 
             Console.WriteLine(AskJeorje(jeorjeInput));

@@ -23,12 +23,10 @@ namespace Jeorje
         
         public override bool CheckRule(SymbolTable symbolTable, List<AST> premises)
         {
-            if (Requirements.Count != 2)
+            if (Requirements.Count != 1)
             {
-                throw new Exception($"Expecting 2 premises, got {Requirements.Count}");
+                throw new Exception($"Expecting 1 premise, got {Requirements.Count}");
             }
-            
-            Console.WriteLine(Requirements[0]);
 
             return true;
         }

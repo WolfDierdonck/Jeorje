@@ -5,9 +5,19 @@ namespace Jeorje
 {
     public class SymbolTable
     {
-        public Dictionary<string, AST> Statements = new Dictionary<string, AST>();
-        public HashSet<string> Identifiers = new HashSet<string>();
+        public Dictionary<string, AST> Statements;
+        public HashSet<string> Identifiers;
 
+        public SymbolTable()
+        {
+            Statements = new Dictionary<string, AST>();
+            Identifiers = new HashSet<string>();
+        }
+        public SymbolTable(Dictionary<string, AST> statements, HashSet<string> identifiers)
+        {
+            Statements = statements;
+            Identifiers = identifiers;
+        }
         public void UpdateSymbols(string s, AST tree)
         {
             // Add (s, tree) to Rules;

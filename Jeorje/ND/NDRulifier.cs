@@ -143,8 +143,20 @@ namespace Jeorje
                     throw new Exception("Commas are required between line labels");
                 }
                 
-                requirements.Add(tokens[i].Lexeme);
-                i += 2;
+                if (i < tokens.Count - 2 && tokens[i + 1].Lexeme == "-")
+                {
+                    if (tokens[i+2].TokenType != TokenType.Label)
+                    {
+                        throw new Exception($"Invalid label {tokens[i+2].Lexeme}");
+                    }
+                    requirements.Add(tokens[i].Lexeme + '-' + tokens[i+2].Lexeme);
+                    i += 4;
+                }
+                else
+                {
+                    requirements.Add(tokens[i].Lexeme);
+                    i += 2;
+                }
             }
 
             return (tokens[1].Lexeme, requirements);
