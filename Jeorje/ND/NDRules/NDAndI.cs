@@ -19,12 +19,12 @@ namespace Jeorje
             Requirements = requirements;
             Predicate = predicate;
         }
+        
         public override bool CheckRule(SymbolTable symbolTable, List<AST> premises)
         {
-            var reqPool = new HashSet<AST> {};
-            Requirements.ForEach(r => reqPool.Add(symbolTable.Statements[r]));
-                
-            if (!(Predicate.Children.ToHashSet().SequenceEqual(reqPool) && Predicate.Token.TokenType == TokenType.And))
+            var requirementAsts = Requirements.Select(requirement => symbolTable.Statements[requirement]).ToHashSet();
+
+            if (!(requirementAsts.SetEquals(Predicate.Children.ToHashSet()) && Predicate.Token.TokenType == TokenType.And))
             {
                 throw new Exception($"Error on line with label {Label}: given predicate does not match requirements");
             }

@@ -17,8 +17,10 @@ namespace Jeorje
                               "z | !z\n" +
                               "\n" +
                               "0) !a premise\n" +
-                              "1) !z | z by lem\n" 
-                              ;
+                              "1) !z | z by lem\n" +
+                              "2) !a & (!z | z) by and_i on 0, 1\n" +
+                              "3) !a & (!z | z) & (!a & (!z | z)) by and_i on 0,1,2 "
+                ;
             
             string output;
             

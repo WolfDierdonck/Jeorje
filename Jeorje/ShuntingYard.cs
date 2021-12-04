@@ -58,7 +58,7 @@ namespace Jeorje
                         break;
                     case TokenType.RParen:
                         var endOuterLoop = false;
-                        while (operatorStack.Count != 0)
+                        while (operatorStack.Count != 0 && !endOuterLoop)
                         {
                             popped = operatorStack.Pop();
                             if (popped.TokenType == TokenType.LParen)
@@ -82,7 +82,7 @@ namespace Jeorje
                         {
                             var o1 = t;
                             Token o2;
-                            while (operatorStack.Count != 0 && null != (o2 = operatorStack.Peek()))
+                            while (operatorStack.Count != 0 && null != (o2 = operatorStack.Peek()) && o2.TokenType != TokenType.LParen)
                             {
                                 if (!_operatorRightAssociative[o1.TokenType] || !greaterPrecedence(o1, o2))
                                 {
