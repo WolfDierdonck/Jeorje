@@ -25,7 +25,7 @@ namespace Jeorje
                     return GetNDFormat(modifiedTokens);
 
                 default:
-                    throw new Exception($"check type {checkType.ToString()} not supported yet");
+                    throw new Exception($"Check type {checkType.ToString()} not supported yet");
             } 
         }
 

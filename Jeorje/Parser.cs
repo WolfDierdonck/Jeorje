@@ -19,7 +19,10 @@ namespace Jeorje
 
         public static AST ParseLine(Line line)
         {
-            return CollapseTree(ShuntingYard.ConvertInfixToAST(line));
+            Logger.AddError($"Latest: Parsing line {line}");
+            var ast = CollapseTree(ShuntingYard.ConvertInfixToAST(line));
+            Logger.RemoveError();
+            return ast;
         }
 
         private static AST CollapseTree(BinaryAST input)

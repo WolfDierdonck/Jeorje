@@ -73,7 +73,7 @@ namespace Jeorje
 
                         if (!endOuterLoop)
                         {
-                            throw new Exception("Bottom of operator stack is not a left brace and we are attempting to add a right brace");
+                            throw new Exception("There are no open left braces and we are trying to add a right brace");
                         }
 
                         break;

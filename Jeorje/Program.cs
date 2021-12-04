@@ -42,8 +42,10 @@ a <=> c
             try
             {
                 var tokens = Scanner.MaximalMunchScan(jeorjeInput);
+                Logger.AddStep("Successfully scanned input tokens");
 
                 var proofFormat = Transformer.TransformTokens(tokens);
+                Logger.AddStep($"Found proof format, performing {proofFormat.CheckType}");
 
                 switch (proofFormat.CheckType)
                 {
@@ -51,22 +53,25 @@ a <=> c
                         var ndFormat = proofFormat as NDFormat;
                         List<AST> ndPremises = Parser.ParseLines(ndFormat.Premises);
                         AST ndGoal = Parser.ParseLine(ndFormat.Goal);
-                        List<NDRule> ndProof = NDRulifier.RulifyLines(ndFormat.Proof);
+                        Logger.AddStep("Parsed premises and goal");
                         
-                        output = Validator.ValidateND(ndPremises, ndGoal, ndProof);
+                        List<NDRule> ndProof = NDRulifier.RulifyLines(ndFormat.Proof);
+                        Logger.AddStep("Rulify ND worked");
+                        
+                        Logger.AddStep(Validator.ValidateND(ndPremises, ndGoal, ndProof));
                         break;
 
                     default:
-                        throw new Exception($"check type {proofFormat.CheckType.ToString()} not supported yet");
+                        throw new Exception($"Check type {proofFormat.CheckType.ToString()} not supported yet");
                 }
             }
             
             catch (Exception e)
             {
-                output = $"Exception thrown:\n{e.Message}";
+                 Logger.AddError($"Exception thrown:\n{e.Message}");
             }
             
-            Console.WriteLine(output);
+            Console.WriteLine(Logger.LogAll());
             
         }
     }

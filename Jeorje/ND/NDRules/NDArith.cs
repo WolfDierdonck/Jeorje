@@ -22,6 +22,7 @@ namespace Jeorje
         //0) a&b|c=>d=>e&!z by magic
         public override bool CheckRule(SymbolTable symbolTable, List<AST> premises)
         {
+            Logger.AddWarning($"Rule arith used on line with label {Label}");
             return true;
         }
     }
