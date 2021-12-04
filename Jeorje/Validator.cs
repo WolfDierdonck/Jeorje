@@ -30,7 +30,7 @@ namespace Jeorje
             var currentSymbolTable = new SymbolTable();
             var scopesStack = new Stack<string>();
             var shouldEnterScope = false;
-            var justExitedScopeName = "";
+            var shouldExitScope = false;
             
             symbolTableStack.Push(currentSymbolTable);
             foreach (var rule in proof)
@@ -49,11 +49,13 @@ namespace Jeorje
                     }
                     else if ( _exitScopingRules.Contains(rule.Name) )
                     {
-                        if (justExitedScopeName == "")
+                        if (!shouldExitScope)
                         {
                             throw new Exception($"Error on line {rule.Label}: Missing '}}'");
                         }
-                        justExitedScopeName = "";
+                        symbolTableStack.Pop();
+                        var ruleName = scopesStack.Pop();
+                        shouldExitScope = false;
                     }
                     if (rule.Name == "lbrace")
                     {
@@ -66,12 +68,11 @@ namespace Jeorje
                     }
                     else if (rule.Name == "rbrace")
                     {
-                        if (scopesStack.Count == 0)
+                        if (shouldExitScope || scopesStack.Count == 0)
                         {
                             throw new Exception("Invalid use of '}'");
                         }
-                        symbolTableStack.Pop();
-                        justExitedScopeName = scopesStack.Pop();
+                        shouldExitScope = true;
                     }
                     else
                     {
