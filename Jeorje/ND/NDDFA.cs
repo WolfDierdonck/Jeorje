@@ -110,7 +110,12 @@ namespace Jeorje
                         return "whiteSpace";
                     
                     default:
-                        return "ID";
+                        if (char.IsLetterOrDigit(c) || c == '_')
+                        {
+                            return "ID";
+                        }
+
+                        return string.Empty;
                 }
             }
             else if (s == "=")

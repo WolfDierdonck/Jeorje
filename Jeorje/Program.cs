@@ -10,38 +10,27 @@ namespace Jeorje
     {
         static void Main(string[] args)
         {
-
-
-
             var jeorjeInput = @"
-#check ND
+                    #check ND
 
-a <=> b,
-c <=> b
-|-
-a <=> c
+                    a <=> b,
+                    c <=> b
+                    |-
+                    a <=> c
 
-1) a <=> b premise
-2) c <=> b premise
-3) a <=> c by trans on 1, 2
-                "; 
-                    
-                    
-                    // "this is just a test\n" +
-                    //           "#check ND\n" +
-                    //           "!a\n" +
-                    //           "|-\n" +
-                    //           "z | !z\n" +
-                    //           "\n" +
-                    //           "0) !a premise\n" +
-                    //           "1) !z | z by lem\n" 
-                    //           ;
-            
-            string output;
-            
+                    1) a <=> b premise
+                    2) c <=> b premise
+                    3) a <=> c by trans on 1, 2
+                ";
+
+            Console.WriteLine(AskJeorje(jeorjeInput));
+        }
+
+        public static string AskJeorje(string input)
+        {
             try
             {
-                var tokens = Scanner.MaximalMunchScan(jeorjeInput);
+                var tokens = Scanner.MaximalMunchScan(input);
                 Logger.AddStep("Successfully scanned input tokens");
 
                 var proofFormat = Transformer.TransformTokens(tokens);
@@ -68,11 +57,10 @@ a <=> c
             
             catch (Exception e)
             {
-                 Logger.AddError($"Exception thrown:\n{e.Message}");
+                Logger.AddError($"Exception thrown:\n{e.Message}");
             }
             
-            Console.WriteLine(Logger.LogAll());
-            
+            return Logger.LogAll();
         }
     }
 }
