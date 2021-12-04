@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Jeorje
 {
-    public class Token : IEquatable<Token>
+    public class Token: IEquatable<Token>
     {
         public TokenType TokenType;
         public string Lexeme;
@@ -139,7 +139,23 @@ namespace Jeorje
                 return false;
             }
             return Lexeme == other.Lexeme && TokenType == other.TokenType;
-        }            
+        }
+        public static bool operator ==(Token lhs, Token rhs)
+        {
+            if (lhs is null)
+            {
+                if (rhs is null)
+                {
+                    return true;
+                }
+                // Only the left side is null.
+                return false;
+            }
+            // Equals handles case of null on right side.
+            return lhs.Equals(rhs);
+        }
+
+        public static bool operator !=(Token lhs, Token rhs) => !(lhs == rhs);            
 
     }
 

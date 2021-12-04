@@ -26,7 +26,15 @@ namespace Jeorje
         {
             Children.Add(new AST(token));
         }
+        public override bool Equals(object obj) => this.Equals(obj as AST);
 
+        public override int GetHashCode()
+        {
+            return (int) Token.TokenType;
+        }
+        
+        
+        
         public bool Equals(AST other)
         {
             if (other is null)
@@ -41,5 +49,23 @@ namespace Jeorje
 
             return Children.SequenceEqual(other.Children);
         }
+        
+        public static bool operator ==(AST lhs, AST rhs)
+        {
+            if (lhs is null)
+            {
+                if (rhs is null)
+                {
+                    return true;
+                }
+                // Only the left side is null.
+                return false;
+            }
+            // Equals handles case of null on right side.
+            return lhs.Equals(rhs);
+        }
+
+        public static bool operator !=(AST lhs, AST rhs) => !(lhs == rhs);
+        
     }
 }
