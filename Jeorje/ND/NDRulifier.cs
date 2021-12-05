@@ -30,6 +30,7 @@ namespace Jeorje
             typeof(NDEnterForallI),
             typeof(NDEnterExistsE),
             typeof(NDCase),
+            typeof(NDCases),
             typeof(NDImpI),
             typeof(NDIffE),
             typeof(NDIffMP),
