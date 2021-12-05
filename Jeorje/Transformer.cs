@@ -41,6 +41,11 @@ namespace Jeorje
                     updatedTokens.Insert(i, new Token(TokenType.DummyNotOperand, "$"));
                     i++;
                 }
+                else if (tokens[i].TokenType is TokenType.Forall or TokenType.Exists)
+                {
+                    updatedTokens.Insert(i, new Token(TokenType.DummyQuantifierOperand, "`"));
+                    i++;
+                }
                 else if (i < tokens.Count - 1 &&
                          tokens[i].TokenType == TokenType.Identifier && tokens[i + 1].TokenType == TokenType.LParen)
                 {
@@ -58,10 +63,13 @@ namespace Jeorje
         {
             var i = 0;
             var predicates = new List<Line>();
+
+            var lparenCount = 0;
+            var quantifierCount = 0;
                     
             while (tokens[i].TokenType != TokenType.Entails)
             {
-                if (tokens[i].TokenType == TokenType.Comma)
+                if (tokens[i].TokenType == TokenType.Comma && lparenCount == 0 && quantifierCount == 0)
                 {
                     predicates.Add(new Line(tokens.GetRange(0, i)));
                     tokens.RemoveRange(0, i+1);
@@ -69,6 +77,23 @@ namespace Jeorje
                 }
                 else
                 {
+                    if (tokens[i].TokenType == TokenType.LParen)
+                    {
+                        lparenCount++;
+                    }
+                    if (tokens[i].TokenType == TokenType.RParen) 
+                    {
+                        lparenCount--;
+                    }
+                    if (tokens[i].TokenType == TokenType.Forall || tokens[i].TokenType == TokenType.Exists)
+                    {
+                        quantifierCount++;
+                    }
+                    if (tokens[i].TokenType == TokenType.Dot)
+                    {
+                        quantifierCount--;
+                    }
+                    
                     i++;
                 }
             }
