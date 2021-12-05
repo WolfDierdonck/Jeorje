@@ -120,11 +120,9 @@ namespace Jeorje
                     return false;
                 case TokenType.True:
                     return false;
-                case TokenType.Forall:
-                    return false;
-                case TokenType.Exists:
-                    return false;
                 case TokenType.DummyNotOperand:
+                    return false;
+                case TokenType.DummyQuantifierOperand:
                     return false;
 
                 default:
@@ -189,6 +187,7 @@ namespace Jeorje
         Hashtag, // #
         Entails, // |-
         DummyNotOperand, // $
+        DummyQuantifierOperand, //` 
         Comment, // lmao
         Whitespace, // \n or \r or \t or ' '
         Label, // must start with integer, then can be any alphanumeric character after

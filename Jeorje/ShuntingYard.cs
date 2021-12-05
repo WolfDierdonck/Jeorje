@@ -16,23 +16,26 @@ namespace Jeorje
         
         private static Dictionary<TokenType, int> _operatorPrecedence = new Dictionary<TokenType, int>
         {
-            {TokenType.FuncSeparator, 10},
-            {TokenType.MathOperator, 9},
-            {TokenType.Not, 8}, // is this correct, shouldnt it be the highest?
-            {TokenType.And, 7},
-            {TokenType.Or, 6},
-            {TokenType.Implies, 5},
-            {TokenType.Iff, 4},
-            {TokenType.NotEqual, 3},
-            {TokenType.Equal, 2},
-            {TokenType.Dot, 1},
-            {TokenType.Comma, 0},
+            {TokenType.FuncSeparator, 120},
+            {TokenType.Forall, 110},
+            {TokenType.Exists, 100},
+            {TokenType.MathOperator, 90},
+            {TokenType.Not, 80}, // is this correct, shouldnt it be the highest? of the operators, it is
+            {TokenType.And, 70},
+            {TokenType.Or, 60},
+            {TokenType.Implies, 50},
+            {TokenType.Iff, 40},
+            {TokenType.NotEqual, 30},
+            {TokenType.Equal, 20},
+            {TokenType.Comma, 10},
+            {TokenType.Dot, 0},
         };
 
         private static Dictionary<TokenType, bool> _operatorRightAssociative = new Dictionary<TokenType, bool>
         {
-            {TokenType.Comma, true},
-            {TokenType.FuncSeparator, false},
+            {TokenType.Exists, true},
+            {TokenType.Forall, true},
+            {TokenType.FuncSeparator, true},
             {TokenType.MathOperator, false},
             {TokenType.Not, true},
             {TokenType.And, true},
@@ -42,6 +45,7 @@ namespace Jeorje
             {TokenType.NotEqual, false},
             {TokenType.Equal, false},
             {TokenType.Dot, true},
+            {TokenType.Comma, true},
         };
         public static BinaryAST ConvertInfixToAST(Line input)
         {

@@ -85,7 +85,7 @@ namespace Jeorje
                     {
                         lparenCount--;
                     }
-                    if (tokens[i].TokenType == TokenType.Forall || tokens[i].TokenType == TokenType.Exists)
+                    if (tokens[i].TokenType is TokenType.Forall or TokenType.Exists)
                     {
                         quantifierCount++;
                     }
