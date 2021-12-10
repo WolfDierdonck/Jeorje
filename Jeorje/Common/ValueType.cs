@@ -11,6 +11,11 @@ namespace Jeorje
             TypeName = typeName;
         }
 
+        public override bool IsNull()
+        {
+            return !string.IsNullOrEmpty(TypeName);
+        }
+
         public bool Equals(PredicateType type)
         {
             if (type is null || type is not ValueType)

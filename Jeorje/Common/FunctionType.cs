@@ -15,6 +15,12 @@ namespace Jeorje
             ParamTypes = paramTypes;
             ReturnType = returnType;
         }
+
+        public override bool IsNull()
+        {
+            return (ReturnType == null || ReturnType.IsNull()) && 
+                   (ParamTypes == null || ParamTypes.All(paramType => paramType == null || paramType.IsNull()));
+        }
         
         public bool Equals(PredicateType type)
         {

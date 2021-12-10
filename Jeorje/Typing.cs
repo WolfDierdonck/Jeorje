@@ -53,37 +53,21 @@ namespace Jeorje
 
                     var leftType = CheckType(ast.Children[0], null);
                     var rightType = CheckType(ast.Children[1], leftType);
-
-                    //now, left and right type must be equal (they can both be null)
-
-                    if (leftType is null || rightType is null)
+                    
+                    if (leftType is null && rightType is not null)
                     {
-                        var leftIdentifier = ast.Children[0].Token.TokenType == TokenType.Identifier
-                            ? ast.Children[0].Token.Lexeme
-                            : ast.Children[0].Children[0].Token.Lexeme;
-                        
-                        var rightIdentifier = ast.Children[1].Token.TokenType == TokenType.Identifier
-                            ? ast.Children[1].Token.Lexeme
-                            : ast.Children[1].Children[0].Token.Lexeme;
-                        
-                        if (typeTable.Bindings.ContainsKey(leftIdentifier))
-                        {
-                            typeTable.Bindings[leftIdentifier].Add(rightIdentifier);
-                        }
-                        else
-                        {
-                            typeTable.Bindings[leftIdentifier] = new HashSet<string> {rightIdentifier};
-                        }
-                        
-                        if (typeTable.Bindings.ContainsKey(rightIdentifier))
-                        {
-                            typeTable.Bindings[rightIdentifier].Add(leftIdentifier);
-                        }
-                        else
-                        {
-                            typeTable.Bindings[rightIdentifier] = new HashSet<string> {leftIdentifier};
-                        }
+                        AddBindingHelper(typeTable, ast.Children[0], ast.Children[1], rightType);
                     }
+                    else if (leftType is not null && rightType is null)
+                    {
+                        AddBindingHelper(typeTable, ast.Children[1], ast.Children[0], leftType);
+                    }
+                    else if (leftType is null && rightType is null)
+                    {
+                        AddBindingHelper(typeTable, ast.Children[0], ast.Children[1], rightType);
+                        AddBindingHelper(typeTable, ast.Children[0], ast.Children[1], leftType);
+                    }
+                    
                     else
                     {
                         if (leftType is ValueType leftValue && rightType is ValueType rightValue)
@@ -128,45 +112,13 @@ namespace Jeorje
                     
                     CheckType(ast.Children[1], CreateBool());
                     
-                    foreach (var binding in typeTable.Bindings)
-                    {
-                        if (binding.Key != null)
-                        {
-                            foreach (var type in binding.Value)
-                            {
-                                if (type != null)
-                                {
-                                    var leftType = typeTable.Table[binding.Key];
-                                    var rightType = typeTable.Table[type];
-                                    if (leftType is ValueType leftValue && rightType is ValueType rightValue)
-                                    {
-                                        if (leftValue != rightValue)
-                                        {
-                                            throw new Exception($"Equal types do not match");
-                                        }
-                                    }
-                        
-                                    else if (leftType is FunctionType leftFunction && rightType is FunctionType rightFunction)
-                                    {
-                                        if (leftFunction != rightFunction)
-                                        {
-                                            throw new Exception($"Equal types do not match");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        throw new Exception($"Equal types do not match");
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    CheckBindingsHelper(typeTable);
                     
                     typeTables.Pop();
                     return CreateBool();
                 }
 
-                if (ast.Token.TokenType == TokenType.MathOperator)
+                if (ast.Token.TokenType == TokenType.MathOperator || ast.Token.TokenType == TokenType.CompareOperator)
                 {
                     if (!IsTypeBool(expectedType)) // checks if expectedType is not a bool (null is counted as bool)
                     {
@@ -204,7 +156,7 @@ namespace Jeorje
                             ((FunctionType) typeTable.Table[functionIdentifier]).ReturnType = expectedType;
                         }
                         
-                        else if (expectedType == null)
+                        else if (expectedType == null) // REQUIRED, DO NOT REMOVE, DONT ASK QUESTIONS (not a joke)
                         {
                             
                         }
@@ -279,19 +231,8 @@ namespace Jeorje
                     return functionType.ReturnType;
                 }
 
-                if (ast.Token.TokenType == TokenType.Identifier) // this will never be a function identifier
+                if (ast.Token.TokenType == TokenType.Identifier)
                 {
-                    if (int.TryParse(ast.Token.Lexeme, out _))
-                    {
-                        if (!IsTypeNat(expectedType)) // checks if expectedType is not a bool (null is counted as bool)
-                        {
-                            throw new Exception(
-                                $"Error with {ast.Token.Lexeme}: Returns nat but is expected to return {expectedType}");
-                        }
-
-                        return CreateNat();
-                    }
-
                     if (!typeTable.Table.ContainsKey(ast.Token.Lexeme))
                     {
                         typeTable.Table[ast.Token.Lexeme] = expectedType;
@@ -311,7 +252,24 @@ namespace Jeorje
                         return expectedType;
                     }
 
-                    if (identifierType != expectedType)
+                    if (expectedType is ValueType expectedValue && identifierType is ValueType returnValue)
+                    {
+                        if (returnValue != expectedValue)
+                        {
+                            throw new Exception($"Error with {ast.Token.Lexeme}: " +
+                                                $"Returns {identifierType} but is expected to return {expectedType}");
+                        }
+                    }
+                        
+                    else if (expectedType is FunctionType expectedFunction && identifierType is FunctionType returnFunction)
+                    {
+                        if (returnFunction != expectedFunction)
+                        {
+                            throw new Exception($"Error with {ast.Token.Lexeme}: " +
+                                                $"Returns {identifierType} but is expected to return {expectedType}");
+                        }
+                    }
+                    else
                     {
                         throw new Exception($"Error with {ast.Token.Lexeme}: " +
                                             $"Returns {identifierType} but is expected to return {expectedType}");
@@ -326,6 +284,20 @@ namespace Jeorje
                     return CheckType(ast.Children[0], rightType);
                 }
 
+                if (ast.Token.TokenType == TokenType.Label)
+                {
+                    if (int.TryParse(ast.Token.Lexeme, out _))
+                    {
+                        if (!IsTypeNat(expectedType)) // checks if expectedType is not a nat (null is counted as nat)
+                        {
+                            throw new Exception(
+                                $"Error with {ast.Token.Lexeme}: Returns nat but is expected to return {expectedType}");
+                        }
+
+                        return CreateNat();
+                    }
+                }
+
                 throw new Exception($"unsupported token {ast.Token.TokenType} while typing");
             }
 
@@ -334,7 +306,47 @@ namespace Jeorje
                 throw new Exception("outermost statement must be of type bool");
             }
             
-            foreach (var binding in typeTables.Peek().Bindings)
+            CheckBindingsHelper(typeTables.Peek());
+            
+        }
+
+        private static void AddBindingHelper(TypeTable typeTable, AST notDefinedAST, AST definedAST, PredicateType rightType)
+        {
+            var leftIdentifier = notDefinedAST.Token.TokenType == TokenType.Identifier
+                ? notDefinedAST.Token.Lexeme
+                : notDefinedAST.Children[0].Token.Lexeme;
+                        
+            var rightIdentifier = definedAST.Token.TokenType is TokenType.Identifier or TokenType.Label
+                ? definedAST.Token.Lexeme
+                : definedAST.Children[0].Token.Lexeme;
+                        
+            if (definedAST.Token.TokenType is TokenType.Identifier or TokenType.FuncSeparator)
+            {
+                if (typeTable.Bindings.ContainsKey(notDefinedAST.Token.Lexeme))
+                {
+                    typeTable.Bindings[leftIdentifier].Add(rightIdentifier);
+                }
+                else
+                {
+                    typeTable.Bindings[leftIdentifier] = new HashSet<string> {rightIdentifier};
+                }
+            }
+            else
+            {
+                if (typeTable.Bindings.ContainsKey(notDefinedAST.Token.Lexeme))
+                {
+                    typeTable.Bindings[leftIdentifier].Add(rightType.ToString());
+                }
+                else
+                {
+                    typeTable.Bindings[leftIdentifier] = new HashSet<string> {rightType.ToString()};
+                }
+            }
+        }
+
+        private static void CheckBindingsHelper(TypeTable typeTable)
+        {
+            foreach (var binding in typeTable.Bindings)
             {
                 if (binding.Key != null)
                 {
@@ -342,26 +354,49 @@ namespace Jeorje
                     {
                         if (type != null)
                         {
-                            var leftType = typeTables.Peek().Table[binding.Key];
-                            var rightType = typeTables.Peek().Table[type];
-                            if (leftType is ValueType leftValue && rightType is ValueType rightValue)
+                            var leftType = typeTable.Table[binding.Key];
+                            if (!(leftType is null || leftType is FunctionType functionType && functionType.IsNull()))
                             {
-                                if (leftValue != rightValue)
+                                if (typeTable.Table.ContainsKey(type))
                                 {
-                                    throw new Exception($"Equal types do not match");
+                                    var rightType = typeTable.Table[type];
+                                    if (leftType is ValueType leftValue && rightType is ValueType rightValue)
+                                    {
+                                        if (leftValue != rightValue)
+                                        {
+                                            throw new Exception($"Equal types do not match");
+                                        }
+                                    }
+
+                                    else if (leftType is FunctionType leftFunction && rightType is FunctionType rightFunction)
+                                    {
+                                        if (leftFunction != rightFunction)
+                                        {
+                                            throw new Exception($"Equal types do not match");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        throw new Exception($"Equal types do not match");
+                                    }
+                                }
+                                else
+                                {
+                                if (leftType is ValueType)
+                                {
+                                    if (leftType.ToString() != type)
+                                    {
+                                        throw new Exception($"Equal types do not match");
+                                    }
+                                }
+                                else
+                                {
+                                    if (((FunctionType) leftType).ReturnType.ToString() != type)
+                                    {
+                                        throw new Exception($"Equal types do not match");
+                                    }
                                 }
                             }
-                        
-                            else if (leftType is FunctionType leftFunction && rightType is FunctionType rightFunction)
-                            {
-                                if (leftFunction != rightFunction)
-                                {
-                                    throw new Exception($"Equal types do not match");
-                                }
-                            }
-                            else
-                            {
-                                throw new Exception($"Equal types do not match");
                             }
                         }
                     }
