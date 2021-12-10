@@ -15,16 +15,21 @@ namespace Jeorje
             Table = new Dictionary<string, PredicateType>();
             Bindings = new Dictionary<string, HashSet<string>>();
         }
+        
+        
+        public TypeTable(Dictionary<string, PredicateType> table, Dictionary<string, HashSet<string>> bindings)
+        {
+            Table = table;
+            Bindings = bindings;
+        }
 
         public object Clone()
         {
-            return new TypeTable
-            {
-                Table = Table.ToDictionary(entry => (string) entry.Key.Clone(),
-                    entry => (PredicateType) entry.Value.Clone()),
-                Bindings = Bindings.ToDictionary(entry => (string) entry.Key.Clone(),
-                    entry => new HashSet<string>(entry.Value))
-            };
+            var table = Table.ToDictionary(entry => (string) entry.Key.Clone(),
+                entry => (PredicateType) entry.Value?.Clone());
+            var bindings = Bindings.ToDictionary(entry => (string) entry.Key.Clone(),
+                entry => new HashSet<string>(entry.Value));
+            return new TypeTable(table, bindings);
         }
     }
 }

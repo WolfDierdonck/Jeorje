@@ -11,11 +11,13 @@ namespace Jeorje
         static void Main(string[] args)
         {
             var jeorjeInput = @"
-#check ND
-f(a) | forall x: T1 . x |- false
-1) f(a) | forall x: T1 . x premise
-2) false by magic
-                ";
+            #check ND
+            forall x, y . x | a, a = (forall y . y) |- forall x, y . x | (forall y . y) 
+
+            1) forall x, y . x | a premise 
+            2) a = (y) premise
+            3) forall x, y . x | (y)  by eq_e on 1, 2
+            ";
 
             Console.WriteLine(AskJeorje(jeorjeInput));
         }

@@ -30,6 +30,15 @@ namespace Jeorje
                 }
             }
 
+            if (root.Token.TokenType == TokenType.Identifier)
+            {
+                if (scope.containsBoundedVariable(root.Token))
+                {
+                    throw new Exception("Variable capture");
+                }
+            }
+            
+            
             for (int i = 0; i < root.Children.Count; i++)
             {
                 var child = root.Children[0];
@@ -194,6 +203,10 @@ namespace Jeorje
                     if (beforeSubstitutionChild == toBeReplaced)
                     {
                         CheckFreeForVariables(replacement, scope);
+                    } else if (beforeSubstitutionChild.Token.TokenType == TokenType.Forall)
+                    {
+                        if (beforeSubstitutionChild.Token == afterSubstitutionChild.Token)
+                        return;
                     }
                     else
                     {
