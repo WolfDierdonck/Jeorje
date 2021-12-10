@@ -3,12 +3,17 @@ using System.Text;
 
 namespace Jeorje
 {
-    public class Token: IEquatable<Token>
+    public class Token: IEquatable<Token>, ICloneable
     {
         public TokenType TokenType;
         public string Lexeme;
         public bool IsOperator;
-        
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
+
         public Token(string kind)
         {
             TokenType = ParseTokenType(kind);
