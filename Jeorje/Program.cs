@@ -123,7 +123,7 @@ isPink(x, 2) & isPink(x, 3)
             256) 2 < 4 by arith
             257) 3 < 4 by arith
             
-            260) 2 > iu by eq_e on 223, 254
+            260) 2 > ju by eq_e on 223, 254
             261) 3 > iu by eq_e on 223, 255
             262) 2 < ju by eq_e on 250, 256
             263) 3 < ju by eq_e on 250, 257

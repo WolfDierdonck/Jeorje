@@ -50,8 +50,10 @@ namespace Jeorje
             }
             catch (Exception e)
             {
+                Logger.AddError(e.Message);
                 Substituter.CheckSubstituteAST(symbolTable.Statements[otherSide], Predicate,
                     symbolTable.Statements[eqSide].Children[1], symbolTable.Statements[eqSide].Children[0]);
+                Logger.RemoveError();
             }
             
             Logger.RemoveError();

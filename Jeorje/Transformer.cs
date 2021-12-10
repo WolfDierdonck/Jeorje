@@ -243,13 +243,21 @@ namespace Jeorje
             i = 1; // first token will be a label, so we must start at 1
             while (i < tokens.Count)
             {
-                if ((i < tokens.Count - 1 && tokens[i].TokenType == TokenType.Label &&
-                     tokens[i + 1].TokenType == TokenType.RParen && proofLParenCount == -1) 
-                    || tokens[i].TokenType == TokenType.LBrace
-                    || tokens[i].TokenType == TokenType.RBrace)
+                if (i < tokens.Count - 1 && tokens[i].TokenType == TokenType.Label &&
+                     tokens[i + 1].TokenType == TokenType.RParen && proofLParenCount == -1)
                 {
                     proof.Add(new Line(tokens.GetRange(0, i)));
                     tokens.RemoveRange(0, i);
+                    proofLParenCount = 0;
+                    i = 1;
+                }
+                else if (tokens[i].TokenType == TokenType.LBrace
+                         || tokens[i].TokenType == TokenType.RBrace)
+                {
+                    proof.Add(new Line(tokens.GetRange(0, i)));
+                    tokens.RemoveRange(0, i);
+                    proof.Add(new Line(tokens.GetRange(0, 1)));
+                    tokens.RemoveRange(0, 1);
                     proofLParenCount = 0;
                     i = 1;
                 }

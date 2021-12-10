@@ -99,8 +99,10 @@ namespace Jeorje
                         switch (line.Tokens[3].Lexeme)
                         {
                             case "every":
+                                Logger.RemoveError();
                                 return new NDEnterForallI(label, predicate, null);
                             case "some":
+                                Logger.RemoveError();
                                 return new NDEnterExistsE(label, predicate, null);
                             default:
                                 throw new Exception($"Error on line with label {label}: invalid syntax");

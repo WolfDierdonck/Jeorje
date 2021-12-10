@@ -48,40 +48,8 @@ namespace Jeorje
                     throw new Exception("Every case must conclude the case conclusion");
                 }
             }
-            while (childrenToTraverse.Count > 0)
-            {
-                var node = childrenToTraverse.Dequeue();
-                if (node.Token.TokenType == TokenType.Or)
-                {
-                    childrenToTraverse.Enqueue(node.Children[0]);
-                    childrenToTraverse.Enqueue(node.Children[1]);
-                }
-                else
-                {
-                    if (casesChildren.Contains(node))
-                    {
-                        throw new Exception("Cases must exactly cover all statements in or statement");
-                    }
-                    casesChildren.Add(node);
-                }
-            }
-            
-            childrenToTraverse.Enqueue(symbolTable.Statements[Requirements[0]]);
-            while (childrenToTraverse.Count > 0)
-            {
-                var node = childrenToTraverse.Dequeue();
-                if (node.Token.TokenType == TokenType.Or)
-                {
-                    childrenToTraverse.Enqueue(node.Children[0]);
-                    childrenToTraverse.Enqueue(node.Children[1]);
-                }
-                else
-                {
-                    orStatementChildren.Add(node);
-                }
-            }
-            
-            if (!orStatementChildren.SetEquals(casesChildren))
+
+            if (!childrenToTraverse.ToHashSet().SetEquals(symbolTable.Statements[Requirements[0]].Children.ToHashSet()))
             {
                 throw new Exception("Cases must exactly cover all statements in or statement");
             }

@@ -191,9 +191,12 @@ namespace Jeorje
                     throw new Exception("Invalid children count for Check free variable dots");
                 }
             }
-            
 
-            if (afterSubstitution.Children.Count != beforeSubstitution.Children.Count) 
+
+            if (afterSubstitution.Children.Count != beforeSubstitution.Children.Count)
+            {
+                throw new Exception("mismatched children count in substitution");
+            }
                 
                 for (int i = 0; i < afterSubstitution.Children.Count; i++)
                 {
@@ -203,6 +206,10 @@ namespace Jeorje
                     if (beforeSubstitutionChild == toBeReplaced)
                     {
                         CheckFreeForVariables(replacement, scope);
+                        if (afterSubstitutionChild != replacement)
+                        {
+                            throw new Exception("subsituted wrong value");
+                        }
                     } else if (beforeSubstitutionChild.Token.TokenType == TokenType.Forall)
                     {
                         if (beforeSubstitutionChild.Token == afterSubstitutionChild.Token)
@@ -214,7 +221,7 @@ namespace Jeorje
                         {
                             throw new Exception("Non substituted token does not match between after substitution token and before substitution token");
                         }
-                        CheckSubstituteASTHelper(beforeSubstitution, afterSubstitution, toBeReplaced, replacement, scope);    
+                        CheckSubstituteASTHelper(beforeSubstitutionChild, afterSubstitutionChild, toBeReplaced, replacement, scope);    
                     }
                 
                 }
@@ -239,6 +246,11 @@ namespace Jeorje
         }
         
         private List<Token> boundedVariables;
+
+        public SubstituterScope()
+        {
+            boundedVariables = new List<Token>();
+        }
 
         public bool containsBoundedVariable(Token t)
         {
