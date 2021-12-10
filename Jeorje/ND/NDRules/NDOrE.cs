@@ -25,7 +25,7 @@ namespace Jeorje
         public override bool CheckRule(SymbolTable symbolTable, List<AST> premises)
         {
             
-            if (Requirements.Count != 2)
+            if (Requirements == null || Requirements.Count != 2)
             {
                 throw new Exception($"Error on line with label {Label}: {_name} must have 2 labels");
             }
