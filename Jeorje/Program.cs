@@ -45,7 +45,16 @@ namespace Jeorje
                         
                         Logger.AddStep(Validator.ValidateND(ndPremises, ndGoal, ndProof));
                         break;
+                    case CheckType.ST:
+                        var stFormat = proofFormat as STFormat;
+                        List<AST> stPremises = Parser.ParseLines(stFormat.Premises);
+                        AST stGoal = Parser.ParseLine(stFormat.Goal);
+                        Logger.AddError("Parsed premises and goal");
 
+                        List<ISTEntry> stProof = STRulifier.RulifyLines(stFormat.Proof);
+                        Logger.AddStep("Rulify ST worked");
+                        Logger.AddError(Validator.ValidateST(stPremises, stGoal, stProof));
+                        break;
                     default:
                         throw new Exception($"Check type {proofFormat.CheckType.ToString()} not supported yet");
                 }

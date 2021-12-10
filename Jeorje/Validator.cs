@@ -111,10 +111,9 @@ namespace Jeorje
             return "ND Proof is valid";
         }
 
-        public static string ValidateST(List<AST> predicates, AST goal, List<AST> proof)
+        public static string ValidateST(List<AST> predicates, AST goal, List<ISTEntry> proof)
         {
-
-
+            throw new Exception("ST is unimplemented");
             return "ST Proof is valid";
         }
     }

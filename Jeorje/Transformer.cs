@@ -23,7 +23,8 @@ namespace Jeorje
             {
                 case CheckType.ND:
                     return GetNDFormat(modifiedTokens);
-
+                case CheckType.ST:
+                    return GetSTFormat(modifiedTokens);
                 default:
                     throw new Exception($"Check type {checkType.ToString()} not supported yet");
             } 
@@ -59,10 +60,14 @@ namespace Jeorje
             return updatedTokens;
         }
 
-        private static NDFormat GetNDFormat(List<Token> tokens)
+        private static STFormat GetSTFormat(List<Token> tokens)
         {
+            // This method transforms a list of tokens into an ST format
+            // Includes turning tokens into lines
+            
+            // First must check for premises.
             var i = 0;
-            var predicates = new List<Line>();
+            var premises = new List<Line>();
 
             var lparenCount = 0;
             var quantifierCount = 0;
@@ -71,7 +76,7 @@ namespace Jeorje
             {
                 if (tokens[i].TokenType == TokenType.Comma && lparenCount == 0 && quantifierCount == 0)
                 {
-                    predicates.Add(new Line(tokens.GetRange(0, i)));
+                    premises.Add(new Line(tokens.GetRange(0, i)));
                     tokens.RemoveRange(0, i+1);
                     i = 0;
                 }
@@ -98,7 +103,88 @@ namespace Jeorje
                 }
             }
             
-            predicates.Add(new Line(tokens.GetRange(0, i)));
+            premises.Add(new Line(tokens.GetRange(0, i)));
+            tokens.RemoveRange(0, i+1);
+            
+            // Now must check for goal
+            i = 0;
+            while (tokens[i].TokenType != TokenType.Label)
+            {
+                i++;
+            }
+
+            var goal = new Line(tokens.GetRange(0, i));
+            tokens.RemoveRange(0, i);
+            
+            // Now must check for proof (LMAO)
+            var proof = new List<Line>();
+            
+            i = 0; // first token will be a label, so we must start at 1
+            if (i < tokens.Count - 1 && tokens[i].TokenType == TokenType.LBrace )
+            
+            
+            while (i < tokens.Count)
+            {
+                if ((i < tokens.Count - 1 && tokens[i].TokenType == TokenType.Label &&
+                     tokens[i + 1].TokenType == TokenType.RParen) 
+                    || tokens[i].TokenType == TokenType.LBrace
+                    || tokens[i].TokenType == TokenType.RBrace)
+                {
+                    proof.Add(new Line(tokens.GetRange(0, i)));
+                    tokens.RemoveRange(0, i);
+                    i = 1;
+                }
+                else
+                {
+                    i++;
+                }
+            }
+
+            proof.Add(new Line(tokens.GetRange(0, i)));
+            
+            return null;
+        }
+        
+        private static NDFormat GetNDFormat(List<Token> tokens)
+        {
+            var i = 0;
+            var premises = new List<Line>();
+
+            var lparenCount = 0;
+            var quantifierCount = 0;
+                    
+            while (tokens[i].TokenType != TokenType.Entails)
+            {
+                if (tokens[i].TokenType == TokenType.Comma && lparenCount == 0 && quantifierCount == 0)
+                {
+                    premises.Add(new Line(tokens.GetRange(0, i)));
+                    tokens.RemoveRange(0, i+1);
+                    i = 0;
+                }
+                else
+                {
+                    if (tokens[i].TokenType == TokenType.LParen)
+                    {
+                        lparenCount++;
+                    }
+                    if (tokens[i].TokenType == TokenType.RParen) 
+                    {
+                        lparenCount--;
+                    }
+                    if (tokens[i].TokenType is TokenType.Forall or TokenType.Exists)
+                    {
+                        quantifierCount++;
+                    }
+                    if (tokens[i].TokenType == TokenType.Dot)
+                    {
+                        quantifierCount--;
+                    }
+                    
+                    i++;
+                }
+            }
+            
+            premises.Add(new Line(tokens.GetRange(0, i)));
             tokens.RemoveRange(0, i+1);
 
             
@@ -130,10 +216,10 @@ namespace Jeorje
                     i++;
                 }
             }
-            
+
             proof.Add(new Line(tokens.GetRange(0, i)));
 
-            return new NDFormat(predicates, goal, proof);
+            return new NDFormat(premises, goal, proof);
         }
     }
 }
