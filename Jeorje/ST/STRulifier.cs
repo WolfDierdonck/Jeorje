@@ -16,17 +16,21 @@ namespace Jeorje
                 if (currentLine.Tokens[0].TokenType == TokenType.LBrace)
                 {
                     // Branch
+                    
                 } else if (currentLine.Tokens[0].TokenType == TokenType.Identifier && currentLine.Tokens[0].Lexeme == "by")
                 {
                     // Rule
+                    
                 } else if (currentLine.Tokens[0].TokenType == TokenType.Integer &&
                            currentLine.Tokens[1].TokenType == TokenType.LParen)
                 {
                     // STLine
+                    
                 } else if (currentLine.Tokens[0].TokenType == TokenType.Identifier &&
                            currentLine.Tokens[0].Lexeme == "closed")
                 {
                     // Closed
+                    
                 }
             }
             return branch;
