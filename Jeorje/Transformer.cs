@@ -215,6 +215,8 @@ namespace Jeorje
                 i++;
             }
 
+
+            var goalLparenCount = 0;
             var goal = new Line(tokens.GetRange(0, i));
             tokens.RemoveRange(0, i);
 
@@ -224,7 +226,7 @@ namespace Jeorje
             while (i < tokens.Count)
             {
                 if ((i < tokens.Count - 1 && tokens[i].TokenType == TokenType.Label &&
-                     tokens[i + 1].TokenType == TokenType.RParen) 
+                     tokens[i + 1].TokenType == TokenType.RParen && goalLparenCount == 0) 
                     || tokens[i].TokenType == TokenType.LBrace
                     || tokens[i].TokenType == TokenType.RBrace)
                 {
@@ -234,6 +236,13 @@ namespace Jeorje
                 }
                 else
                 {
+                    if (tokens[i].TokenType == TokenType.LParen)
+                    {
+                        goalLparenCount++;
+                    } else if (tokens[i].TokenType == TokenType.RParen)
+                    {
+                        goalLparenCount--;
+                    }
                     i++;
                 }
             }
