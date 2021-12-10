@@ -6,65 +6,74 @@ namespace Jeorje
     public static class Substituter
     {
 
-        static bool FreeForVariables(AST toReplaceWith, SubstituterScope scope)
+        static void CheckFreeForVariables(AST toReplaceWith, SubstituterScope scope)
         {
-            return true;
+            
         }
 
-        public static void CheckSubstituteAST(AST predicate, AST toBeReplaced, AST toReplaceWith)
+        public static void CheckSubstituteAST(AST beforeSubstitution, AST afterSubstitution, AST toBeReplaced, AST replacement)
         {
             SubstituterScope scope = new SubstituterScope();
-            CheckSubstituteASTHelper(predicate, toBeReplaced, toReplaceWith, scope);
+            CheckSubstituteASTHelper(beforeSubstitution, afterSubstitution, toBeReplaced, replacement, scope);
         }
 
-        static void CheckSubstituteASTHelper(AST predicate, AST toBeReplaced, AST toReplaceWith, SubstituterScope scope)
+        static void AddIdentifierToScope(AST identifier, SubstituterScope scope)
         {
-
-            if (predicate == null)
+            // Identifier is not typed
+            if (identifier.Token.TokenType == TokenType.Identifier) 
             {
-                return;
+                scope.addBoundedVariable(identifier.Token);
+            }
+            else
+            {
+                throw new Exception("Internal Substituter error: Expecting identifier in AddIdentifierToScope but did not find it");
+
+            }
+        }
+        
+        static void AddTypedIdentifier(AST identifier, SubstituterScope scope)
+        {
+            // Identifier is typed
+            if (identifier.Token.TokenType == TokenType.Colon)
+            {
+                
+            }
+            else
+            {
+                throw new Exception("Internal Substituter error: Expecting colon in Add but did not find it");
+
             }
             
-            if (predicate.Token.TokenType == TokenType.Dot)
-            {
-                // SubstituterScope newScope =  ;
-                
-                if (predicate.Children.Count > 0 && predicate.Children[0].Token.TokenType == TokenType.Forall)
-                {
-                    // either typed or untyped here
-                    if (predicate.Children.Count > 1 && predicate.Children[1].Token.TokenType == TokenType.Colon)
-                    {
-                        AST colon = predicate.Children[1];
-                        AST id = colon.Children[0];
-                        AST type = colon.Children[1];
+        }
+        
+        static void CheckSubstituteASTHelper(AST beforeSubstitution, AST afterSubstitution, AST toBeReplaced, AST replacement, SubstituterScope scope)
+        {
 
-                    } else if (predicate.Children.Count > 1 && predicate.Children[1].Token.TokenType == TokenType.Identifier)
-                    {
-                        AST id = predicate.Children[1];
-                    }
-                    else
-                    {
-                        throw new Exception("Invalid token type found: expecting colon or identifier");
-                    }
-                    
-                }
-                else
-                {
-                    throw new Exception("Forall not found next to dot");
-                }
+            if (beforeSubstitution == null && afterSubstitution == null)
+            {
+                return;
+            } else if (beforeSubstitution == null || afterSubstitution == null)
+            {
+                throw new Exception("Substitution: One of the two trees unexpecctedly null. Both expected to be same or differing by substitution");
             }
-
-            for (int i = 0; i < predicate.Children.Count; i++)
+            
+            // Need to handle scoping here :)
+            
+            if (afterSubstitution.Children.Count != beforeSubstitution.Children.Count)
+            
+            for (int i = 0; i < afterSubstitution.Children.Count; i++)
             {
-                var child = predicate.Children[i];
-                if (child == toBeReplaced && FreeForVariables(toReplaceWith, scope))
-                {
-                    // predicate.Children[i] = toReplaceWith;
-                }
-                else
-                {
-                    CheckSubstituteASTHelper(child, toBeReplaced, toReplaceWith, scope);    
-                }
+                // var afterSubstitutionChild = afterSubstitution.Children[i];
+                // var beforeSubstitutio
+                //
+                // if (child == toBeReplaced)
+                // {
+                //     CheckFreeForVariables(toReplaceWith, scope);
+                // }
+                // else
+                // {
+                //     CheckSubstituteASTHelper(child, toBeReplaced, toReplaceWith, scope);    
+                // }
                 
             }
         }
@@ -74,6 +83,26 @@ namespace Jeorje
     class SubstituterScope
     {
         private List<Token> boundedVariables;
+
+        public bool containsBoundedVariable(Token t)
+        {
+            return boundedVariables.Contains(t);
+        }
+
+        public void addBoundedVariable(Token t)
+        {
+            if (containsBoundedVariable(t))
+            {
+                throw new Exception($"Token {t.Lexeme} already exists in scope");
+            }
+            boundedVariables.Add(t);
+        }
+        
+        public void removeBoundedVariable(Token t)
+        {
+            boundedVariables.Remove(t);
+        }
+        
     }
     
 }
