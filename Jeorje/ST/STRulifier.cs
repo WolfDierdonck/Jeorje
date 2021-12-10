@@ -21,7 +21,7 @@ namespace Jeorje
                 {
                     // Rule
                     
-                } else if (currentLine.Tokens[0].TokenType == TokenType.Integer &&
+                } else if (currentLine.Tokens[0].TokenType == TokenType.Label &&
                            currentLine.Tokens[1].TokenType == TokenType.LParen)
                 {
                     // STLine
