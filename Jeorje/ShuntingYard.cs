@@ -17,8 +17,8 @@ namespace Jeorje
         private static Dictionary<TokenType, int> _operatorPrecedence = new Dictionary<TokenType, int>
         {
             {TokenType.FuncSeparator, 120},
-            {TokenType.Forall, 100},
-            {TokenType.Exists, 110},
+            {TokenType.Forall, 11},
+            {TokenType.Exists, 10},
             {TokenType.MathOperator, 90},
             {TokenType.CompareOperator, 89},
             {TokenType.Not, 80},
@@ -28,7 +28,7 @@ namespace Jeorje
             {TokenType.Iff, 40},
             {TokenType.NotEqual, 30},
             {TokenType.Equal, 89},
-            {TokenType.Comma, 121},
+            {TokenType.Comma, 20},
             {TokenType.Dot, 0},
             {TokenType.Colon, 122}
         };
@@ -40,7 +40,7 @@ namespace Jeorje
             {TokenType.FuncSeparator, true},
             {TokenType.MathOperator, false},
             {TokenType.CompareOperator, false},
-            {TokenType.Not, false},
+            {TokenType.Not, true},
             {TokenType.And, true},
             {TokenType.Or, true},
             {TokenType.Implies, true},
@@ -79,12 +79,13 @@ namespace Jeorje
                             }
                         }
 
-                        if (operatorStack.Count > 0 && operatorStack.Peek().IsOperator)
+                        /*if (operatorStack.Count > 0 && operatorStack.Peek().IsOperator)
                         {
                             addNode(operandStack, operatorStack.Pop());
-                        }
+                        }*/
 
                         if (!endOuterLoop)
+                            
                         {
                             throw new Exception("There are no open left braces and we are trying to add a right brace");
                         }
@@ -98,7 +99,7 @@ namespace Jeorje
                             while (operatorStack.Count != 0 && null != (o2 = operatorStack.Peek()) && o2.TokenType != TokenType.LParen)
                             {
                                 
-                                if (!_operatorRightAssociative[o1.TokenType] || !greaterPrecedence(o1, o2))
+                                if (_operatorPrecedence[o1.TokenType] == _operatorPrecedence[o2.TokenType] && !_operatorRightAssociative[o1.TokenType] || greaterPrecedence(o2, o1))
                                 {
                                     operatorStack.Pop();
                                     addNode(operandStack, o2);
@@ -128,7 +129,7 @@ namespace Jeorje
         }
 
         private static bool greaterPrecedence(Token op1, Token op2) {
-            if (_operatorPrecedence[op1.TokenType] >= _operatorPrecedence[op2.TokenType]) { 
+            if (_operatorPrecedence[op1.TokenType] > _operatorPrecedence[op2.TokenType]) { 
                 return true;
             }
             return false;

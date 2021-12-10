@@ -51,8 +51,8 @@ namespace Jeorje
         
         public override object Clone()
         {
-            return new FunctionType(ParamTypes.Select(type => (PredicateType) type.Clone()).ToList(), 
-                (PredicateType) ReturnType.Clone());
+            return new FunctionType(ParamTypes?.Select(type => (PredicateType) type?.Clone()).ToList(), 
+                (PredicateType) ReturnType?.Clone());
         }
 
         public override string ToString()

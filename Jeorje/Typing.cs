@@ -118,7 +118,20 @@ namespace Jeorje
                     return CreateBool();
                 }
 
-                if (ast.Token.TokenType == TokenType.MathOperator || ast.Token.TokenType == TokenType.CompareOperator)
+                if (ast.Token.TokenType == TokenType.MathOperator)
+                {
+                    if (!IsTypeNat(expectedType)) // checks if expectedType is not a bool (null is counted as bool)
+                    {
+                        throw new Exception(
+                            $"Error with {ast.Token.Lexeme}: Returns bool but is expected to return {expectedType}");
+                    }
+
+                    CheckType(ast.Children[0], CreateNat());
+                    CheckType(ast.Children[1], CreateNat());
+                    return CreateNat();
+                }
+
+                if (ast.Token.TokenType == TokenType.CompareOperator)
                 {
                     if (!IsTypeBool(expectedType)) // checks if expectedType is not a bool (null is counted as bool)
                     {

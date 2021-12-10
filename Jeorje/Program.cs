@@ -12,7 +12,6 @@ namespace Jeorje
         {
             var jeorjeInput = @"
 #check ND
-forall x . f(x) => exists y . y,
 isRow(x), clue(x) = 12, 
 isBlue(x, 1), isBlue(x, 4), isBlue(x, 5), isPink(x, 6),
 forall r . isRow(r) & (clue(r) = 12) => exists i, j . (i > 0) & (i < 4) & (j > i+1) & (j < 6)

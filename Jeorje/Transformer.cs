@@ -199,8 +199,19 @@ namespace Jeorje
 
             
             i = 0;
-            while (tokens[i].TokenType != TokenType.Label)
+            var bracketCount = 0;
+            while (tokens[i].TokenType != TokenType.Label || tokens[i+1].TokenType != TokenType.RParen || bracketCount != 0)
             {
+                if (tokens[i].TokenType == TokenType.LParen)
+                {
+                    bracketCount++;
+                }
+
+                if (tokens[i].TokenType == TokenType.RParen)
+                {
+                    bracketCount--;
+                }
+                
                 i++;
             }
 
