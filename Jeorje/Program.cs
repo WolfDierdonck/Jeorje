@@ -51,7 +51,7 @@ namespace Jeorje
                         AST stGoal = Parser.ParseLine(stFormat.Goal);
                         Logger.AddError("Parsed premises and goal");
 
-                        List<ISTEntry> stProof = STRulifier.RulifyLines(stFormat.Proof);
+                        STBranch stProof = STRulifier.RulifyLines(stFormat.Proof);
                         Logger.AddStep("Rulify ST worked");
                         Logger.AddError(Validator.ValidateST(stPremises, stGoal, stProof));
                         break;
