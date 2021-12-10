@@ -216,7 +216,7 @@ namespace Jeorje
             }
 
 
-            var goalLparenCount = 0;
+            var proofLParenCount = 0;
             var goal = new Line(tokens.GetRange(0, i));
             tokens.RemoveRange(0, i);
 
@@ -226,22 +226,23 @@ namespace Jeorje
             while (i < tokens.Count)
             {
                 if ((i < tokens.Count - 1 && tokens[i].TokenType == TokenType.Label &&
-                     tokens[i + 1].TokenType == TokenType.RParen && goalLparenCount == 0) 
+                     tokens[i + 1].TokenType == TokenType.RParen && proofLParenCount == -1) 
                     || tokens[i].TokenType == TokenType.LBrace
                     || tokens[i].TokenType == TokenType.RBrace)
                 {
                     proof.Add(new Line(tokens.GetRange(0, i)));
                     tokens.RemoveRange(0, i);
+                    proofLParenCount = 0;
                     i = 1;
                 }
                 else
                 {
                     if (tokens[i].TokenType == TokenType.LParen)
                     {
-                        goalLparenCount++;
+                        proofLParenCount++;
                     } else if (tokens[i].TokenType == TokenType.RParen)
                     {
-                        goalLparenCount--;
+                        proofLParenCount--;
                     }
                     i++;
                 }

@@ -36,7 +36,7 @@ isPink(x, 2) & isPink(x, 3)
         & (forall s . (s > i) & (s < j) => isPink(r, s))
         & (forall s . (s > j+1) & (s < 7) => isPink(r, s)) premise
 
-h1) forall a, b . isBlue(a, b) => !isPink(a, b) premise
+1h) forall a, b . isBlue(a, b) => !isPink(a, b) premise
 
 8) isRow(x) & (clue(x) = 12) => exists i, j . (i > 0) & (i < 4) & (j > i+1) & (j < 6)
     & isBlue(x, i) & isBlue(x, j) & isBlue(x, j+1) 
@@ -63,7 +63,7 @@ h1) forall a, b . isBlue(a, b) => !isPink(a, b) premise
         & (forall s . (s > iu) & (s < ju) => isPink(x, s))
         & (forall s . (s > ju+1) & (s < 7) => isPink(x, s)) {
         
-        201) forall b . isBlue(x, b) => !isPink(x, b) by forall_e on h1
+        201) forall b . isBlue(x, b) => !isPink(x, b) by forall_e on 1h
         202) isBlue(x, 1) => !isPink(x, 1) by forall_e on 201
         203) !isPink(x, 1) by imp_e on 3, 202
         

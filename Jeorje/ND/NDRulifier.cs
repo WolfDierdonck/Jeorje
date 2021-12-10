@@ -95,6 +95,16 @@ namespace Jeorje
                     case "case":
                         Logger.RemoveError();
                         return new NDCase(label, predicate, null);
+                    case "for":
+                        switch (line.Tokens[3].Lexeme)
+                        {
+                            case "every":
+                                return new NDEnterForallI(label, predicate, null);
+                            case "some":
+                                return new NDEnterExistsE(label, predicate, null);
+                            default:
+                                throw new Exception($"Error on line with label {label}: invalid syntax");
+                        }
                     default:
                         throw new Exception($"Error on line with label {label}: invalid syntax");
                 };
