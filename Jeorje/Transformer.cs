@@ -106,10 +106,21 @@ namespace Jeorje
             premises.Add(new Line(tokens.GetRange(0, i)));
             tokens.RemoveRange(0, i+1);
             
+            
             // Now must check for goal
             i = 0;
-            while (tokens[i].TokenType != TokenType.Label)
+            var bracketCount = 0;
+            while (tokens[i].TokenType != TokenType.Label || tokens[i+1].TokenType != TokenType.RParen || bracketCount != 0)
             {
+                if (tokens[i].TokenType == TokenType.LParen)
+                {
+                    bracketCount++;
+                }
+
+                if (tokens[i].TokenType == TokenType.RParen)
+                {
+                    bracketCount--;
+                }
                 i++;
             }
 
@@ -118,12 +129,12 @@ namespace Jeorje
             
             // Now must check for proof (LMAO)
             var proof = new List<Line>();
-            
+            var proofLparenCount = 0;
             i = 1; // first token will be a label i guess but this freaking sucks wfuewhfuewhfeuhfeufhewufew
             while (i < tokens.Count)
             {
                 if (i < tokens.Count - 1 && i != 0 && tokens[i].TokenType == TokenType.Label &&
-                     tokens[i + 1].TokenType == TokenType.RParen) 
+                     tokens[i + 1].TokenType == TokenType.RParen && proofLparenCount == -1) 
                 {
                     proof.Add(new Line(tokens.GetRange(0, i)));
                     tokens.RemoveRange(0, i);
@@ -148,6 +159,13 @@ namespace Jeorje
                 }
                 else
                 {
+                    if (tokens[i].TokenType == TokenType.LParen)
+                    {
+                        proofLparenCount++;
+                    } else if (tokens[i].TokenType == TokenType.RParen)
+                    {
+                        proofLparenCount--;
+                    }
                     i++;
                 }
             }
