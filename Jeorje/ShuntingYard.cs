@@ -24,8 +24,8 @@ namespace Jeorje
             {TokenType.Not, 80},
             {TokenType.And, 70},
             {TokenType.Or, 60},
-            {TokenType.Implies, -10},
-            {TokenType.Iff, -20},
+            {TokenType.Implies, 50},
+            {TokenType.Iff, 40},
             {TokenType.NotEqual, 30},
             {TokenType.Equal, 89},
             {TokenType.Comma, 121},
@@ -79,7 +79,7 @@ namespace Jeorje
                             }
                         }
 
-                        if (operatorStack.Peek().IsOperator)
+                        if (operatorStack.Count > 0 && operatorStack.Peek().IsOperator)
                         {
                             addNode(operandStack, operatorStack.Pop());
                         }

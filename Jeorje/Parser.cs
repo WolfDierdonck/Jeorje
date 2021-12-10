@@ -20,10 +20,53 @@ namespace Jeorje
         public static AST ParseLine(Line line)
         {
             Logger.AddError($"Latest: Parsing line {line}");
+            line = QuantifierScoping(line);
             var ast = CollapseTree(ShuntingYard.ConvertInfixToAST(line));
             Typing.CheckPredicate(ast);
             Logger.RemoveError();
             return ast;
+        }
+
+        public static Line QuantifierScoping(Line line)
+        {
+            List<Token> finalTokens = new List<Token>();
+            
+            Stack<int> stack = new Stack<int>();
+            int currentCount = 0;
+
+            for (int i = 0; i < line.Tokens.Count; i++)
+            {
+                Token currentToken = line.Tokens[i];
+                if (currentToken.TokenType == TokenType.DummyQuantifierOperand)
+                {
+                    currentCount++;
+                    finalTokens.Add(new Token(TokenType.LParen, "("));
+                    
+                } else if (currentToken.TokenType == TokenType.LParen)
+                { 
+                    stack.Push(currentCount);
+                    currentCount++;
+                } else if (currentToken.TokenType == TokenType.RParen)
+                {
+                    int numLParensWhenEnteringScope = stack.Pop();
+                    int numExcessParensToAdd = currentCount - numLParensWhenEnteringScope - 1;
+                    for (int j = 0; j < numExcessParensToAdd; j++)
+                    {
+                        finalTokens.Add(new Token(TokenType.RParen, ")"));
+                    }
+                    currentCount -= numExcessParensToAdd;
+                    currentCount -= 1; // for the prexisting rparen
+                }
+                finalTokens.Add(currentToken);
+            }
+
+            // Add excess parens at the end
+            for (int i = 0; i < currentCount; i++)
+            {
+                finalTokens.Add(new Token(TokenType.RParen, ")"));
+            }
+           
+            return new Line(finalTokens);
         }
 
         private static AST CollapseTree(BinaryAST input)
