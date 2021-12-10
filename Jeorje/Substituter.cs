@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Jeorje
 {
@@ -13,20 +14,20 @@ namespace Jeorje
                 var newScope = scope.Clone();
                 scope = (SubstituterScope)newScope;
                 
-                // if (root.Children.Count > 1 && root.Children[0].Token.TokenType == TokenType.Identifier)
-                // {
-                //     var newScope = scope.Clone();
-                //     scope = (SubstituterScope)newScope;
-                //     scope.removeBoundedVariable(root.Children[0].Token);
-                // }
-                // else
-                // {
-                //     throw new Exception("Internal Substituter error: Expecting identifier in CheckFreeForVariables but did not find it");
-                // }
-                
                 // Comma hell
-                
-                
+                // dot --> forall --> comma or id
+                if (root.Children.Count > 0 && root.Children[0].Children.Count > 1)
+                {
+                    var extractedIdentifiersFromForall = extractIdentifiersFromList(root.Children[0].Children[1]);
+                    foreach (var identifier in extractedIdentifiersFromForall)
+                    {
+                        scope.removeBoundedVariable(identifier);
+                    }
+                }
+                else
+                {
+                    throw new Exception("Invalid children count for Check free variable dots");
+                }
             }
 
             for (int i = 0; i < root.Children.Count; i++)
@@ -42,77 +43,110 @@ namespace Jeorje
             SubstituterScope scope = new SubstituterScope();
             CheckSubstituteASTHelper(beforeSubstitution, afterSubstitution, toBeReplaced, replacement, scope);
         }
-        
-        static void RemoveIdentifierFromScope(AST identifier, SubstituterScope scope)
-        {
-            // Identifier is not typed
-            if (identifier.Token.TokenType == TokenType.Identifier) 
-            {
-                scope.removeBoundedVariable(identifier.Token);
-            }
-            else
-            {
-                throw new Exception("Internal Substituter error: Expecting identifier in RemoveIdentifierFromScope but did not find it");
-            }
-        }
-        
-        static void RemoveTypedIdentifierFromScope(AST colon, SubstituterScope scope)
-        {
-            // Identifier is typed
-            if (colon.Token.TokenType == TokenType.Colon)
-            {
-                if (colon.Children.Count > 1 && colon.Children[0].Token.TokenType == TokenType.Identifier)
-                {
-                    scope.removeBoundedVariable(colon.Children[0].Token);    
-                }
-                else
-                {
-                    throw new Exception("Internal Substituter error: Expecting identifier in RemoveTypedIdentifierFromScope but did not find it");
-                }
-                
-            }
-            else
-            {
-                throw new Exception("Internal Substituter error: Expecting colon in Add but did not find it");
+        //
+        // static void RemoveIdentifierFromScope(AST identifier, SubstituterScope scope)
+        // {
+        //     // Identifier is not typed
+        //     if (identifier.Token.TokenType == TokenType.Identifier) 
+        //     {
+        //         scope.removeBoundedVariable(identifier.Token);
+        //     }
+        //     else
+        //     {
+        //         throw new Exception("Internal Substituter error: Expecting identifier in RemoveIdentifierFromScope but did not find it");
+        //     }
+        // }
+        //
+        // static void RemoveTypedIdentifierFromScope(AST colon, SubstituterScope scope)
+        // {
+        //     // Identifier is typed
+        //     if (colon.Token.TokenType == TokenType.Colon)
+        //     {
+        //         if (colon.Children.Count > 1 && colon.Children[0].Token.TokenType == TokenType.Identifier)
+        //         {
+        //             scope.removeBoundedVariable(colon.Children[0].Token);    
+        //         }
+        //         else
+        //         {
+        //             throw new Exception("Internal Substituter error: Expecting identifier in RemoveTypedIdentifierFromScope but did not find it");
+        //         }
+        //         
+        //     }
+        //     else
+        //     {
+        //         throw new Exception("Internal Substituter error: Expecting colon in Add but did not find it");
+        //
+        //     }
+        //     
+        // }
+        //
+        // static void AddIdentifierToScope(AST identifier, SubstituterScope scope)
+        // {
+        //     // Identifier is not typed
+        //     if (identifier.Token.TokenType == TokenType.Identifier) 
+        //     {
+        //         scope.addBoundedVariable(identifier.Token);
+        //     }
+        //     else
+        //     {
+        //         throw new Exception("Internal Substituter error: Expecting identifier in AddIdentifierToScope but did not find it");
+        //     }
+        // }
+        //
+        // static void AddTypedIdentifier(AST colon, SubstituterScope scope)
+        // {
+        //     // Identifier is typed
+        //     if (colon.Token.TokenType == TokenType.Colon)
+        //     {
+        //         if (colon.Children.Count > 1 && colon.Children[0].Token.TokenType == TokenType.Identifier)
+        //         {
+        //             scope.addBoundedVariable(colon.Children[0].Token);    
+        //         }
+        //         else
+        //         {
+        //             throw new Exception("Internal Substituter error: Expecting identifier in AddTypedIdentifier but did not find it");
+        //         }
+        //         
+        //     }
+        //     else
+        //     {
+        //         throw new Exception("Internal Substituter error: Expecting colon in Add but did not find it");
+        //
+        //     }
+        //     
+        // }
 
-            }
+        static List<Token> extractIdentifiersFromList(AST root)
+        {
+            List<Token> extractedIdentifiers = new List<Token>();
+            // Root could be comma, colon, or identifier
             
-        }
+            switch (root.Token.TokenType)
+            {
+                case TokenType.Colon:
+                    if (root.Children.Count > 0 && root.Children[0].Token.TokenType == TokenType.Identifier)
+                    {
+                        extractedIdentifiers.Add(root.Children[0].Token);
+                    }
+                    else
+                    {
+                        throw new Exception("Colon with only one child (or no identifier)! Invalid! Why would you do this?!");
+                    }
+                    break;
+                case TokenType.Identifier:
+                    extractedIdentifiers.Add(root.Token);
+                    break;
+                case TokenType.Comma:
+                    foreach (var child in root.Children)
+                    {
+                        extractedIdentifiers.AddRange(extractIdentifiersFromList(child)); 
+                    } 
+                    break;
+                default:
+                    throw new Exception("expecting colon, identifier or comma while doing comma hell");
+            }
 
-        static void AddIdentifierToScope(AST identifier, SubstituterScope scope)
-        {
-            // Identifier is not typed
-            if (identifier.Token.TokenType == TokenType.Identifier) 
-            {
-                scope.addBoundedVariable(identifier.Token);
-            }
-            else
-            {
-                throw new Exception("Internal Substituter error: Expecting identifier in AddIdentifierToScope but did not find it");
-            }
-        }
-        
-        static void AddTypedIdentifier(AST colon, SubstituterScope scope)
-        {
-            // Identifier is typed
-            if (colon.Token.TokenType == TokenType.Colon)
-            {
-                if (colon.Children.Count > 1 && colon.Children[0].Token.TokenType == TokenType.Identifier)
-                {
-                    scope.addBoundedVariable(colon.Children[0].Token);    
-                }
-                else
-                {
-                    throw new Exception("Internal Substituter error: Expecting identifier in AddTypedIdentifier but did not find it");
-                }
-                
-            }
-            else
-            {
-                throw new Exception("Internal Substituter error: Expecting colon in Add but did not find it");
-
-            }
-            
+            return extractedIdentifiers;
         }
         
         static void CheckSubstituteASTHelper(AST beforeSubstitution, AST afterSubstitution, AST toBeReplaced, AST replacement, SubstituterScope scope)
@@ -123,13 +157,33 @@ namespace Jeorje
                 return;
             } else if (beforeSubstitution == null || afterSubstitution == null)
             {
-                throw new Exception("Substitution: One of the two trees unexpecctedly null. Both expected to be same or differing by substitution");
+                throw new Exception("Substitution: One of the two trees unexpectedly null. Both expected to be same or differing by substitution");
             }
             
             // Need to handle scoping here :)
+            if (beforeSubstitution.Token.TokenType == TokenType.Dot)
+            {
+                
+                var newScope = scope.Clone();
+                scope = (SubstituterScope)newScope;
+                
+                // Comma hell
+                // dot --> forall --> comma or id
+                if (beforeSubstitution.Children.Count > 0 && beforeSubstitution.Children[0].Children.Count > 1)
+                {
+                    var extractedIdentifiersFromForall = extractIdentifiersFromList(beforeSubstitution.Children[0].Children[1]);
+                    foreach (var identifier in extractedIdentifiersFromForall)
+                    {
+                        scope.addBoundedVariable(identifier);
+                    }
+                }
+                else
+                {
+                    throw new Exception("Invalid children count for Check free variable dots");
+                }
+            }
             
-            // Comma hell
-            
+
             if (afterSubstitution.Children.Count != beforeSubstitution.Children.Count) 
                 
                 for (int i = 0; i < afterSubstitution.Children.Count; i++)
@@ -180,11 +234,10 @@ namespace Jeorje
 
         public void addBoundedVariable(Token t)
         {
-            if (containsBoundedVariable(t))
+            if (!containsBoundedVariable(t))
             {
-                throw new Exception($"Token {t.Lexeme} already exists in scope");
+                boundedVariables.Add(t);
             }
-            boundedVariables.Add(t);
         }
         
         public void removeBoundedVariable(Token t)
