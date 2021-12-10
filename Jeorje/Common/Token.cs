@@ -82,13 +82,13 @@ namespace Jeorje
                 case "/":
                     return TokenType.MathOperator;
                 case ">":
-                    return TokenType.MathOperator;
+                    return TokenType.CompareOperator;
                 case "<":
-                    return TokenType.MathOperator;
+                    return TokenType.CompareOperator;
                 case ">=":
-                    return TokenType.MathOperator;
+                    return TokenType.CompareOperator;
                 case "<=":
-                    return TokenType.MathOperator;
+                    return TokenType.CompareOperator;
                 case ",":
                     return TokenType.Comma;
                 case "#":
@@ -128,6 +128,8 @@ namespace Jeorje
                 case TokenType.DummyNotOperand:
                     return false;
                 case TokenType.DummyQuantifierOperand:
+                    return false;
+                case TokenType.Label:
                     return false;
 
                 default:
@@ -196,6 +198,6 @@ namespace Jeorje
         Comment, // lmao
         Whitespace, // \n or \r or \t or ' '
         Label, // must start with integer, then can be any alphanumeric character after
-        Integer
+        CompareOperator
     }
 }

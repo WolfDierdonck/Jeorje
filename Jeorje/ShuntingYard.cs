@@ -17,14 +17,15 @@ namespace Jeorje
         private static Dictionary<TokenType, int> _operatorPrecedence = new Dictionary<TokenType, int>
         {
             {TokenType.FuncSeparator, 120},
-            {TokenType.Forall, 10},
-            {TokenType.Exists, 11},
+            {TokenType.Forall, 100},
+            {TokenType.Exists, 110},
             {TokenType.MathOperator, 90},
+            {TokenType.CompareOperator, 89},
             {TokenType.Not, 80},
             {TokenType.And, 70},
             {TokenType.Or, 60},
-            {TokenType.Implies, 50},
-            {TokenType.Iff, 40},
+            {TokenType.Implies, -10},
+            {TokenType.Iff, -20},
             {TokenType.NotEqual, 30},
             {TokenType.Equal, 89},
             {TokenType.Comma, 121},
@@ -34,18 +35,19 @@ namespace Jeorje
 
         private static Dictionary<TokenType, bool> _operatorRightAssociative = new Dictionary<TokenType, bool>
         {
-            {TokenType.Exists, false},
-            {TokenType.Forall, false},
+            {TokenType.Exists, true},
+            {TokenType.Forall, true},
             {TokenType.FuncSeparator, true},
             {TokenType.MathOperator, false},
+            {TokenType.CompareOperator, false},
             {TokenType.Not, false},
             {TokenType.And, true},
             {TokenType.Or, true},
-            {TokenType.Implies, false},
-            {TokenType.Iff, false},
+            {TokenType.Implies, true},
+            {TokenType.Iff, true},
             {TokenType.NotEqual, true},
             {TokenType.Equal, true},
-            {TokenType.Dot, true},
+            {TokenType.Dot, false},
             {TokenType.Comma, true},
             {TokenType.Colon, true}
         };
@@ -75,6 +77,11 @@ namespace Jeorje
                             {
                                 addNode(operandStack, popped);
                             }
+                        }
+
+                        if (operatorStack.Peek().IsOperator)
+                        {
+                            addNode(operandStack, operatorStack.Pop());
                         }
 
                         if (!endOuterLoop)
