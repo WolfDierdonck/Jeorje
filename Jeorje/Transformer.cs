@@ -119,29 +119,33 @@ namespace Jeorje
             // Now must check for proof (LMAO)
             var proof = new List<Line>();
             
-            i = 0; // first token will be a label, so we must start at 1
-            if (i < tokens.Count - 1 && tokens[i].TokenType == TokenType.LBrace )
-            
-            
+            i = 1; // first token will be a label i guess but this freaking sucks wfuewhfuewhfeuhfeufhewufew
             while (i < tokens.Count)
             {
-                if ((i < tokens.Count - 1 && tokens[i].TokenType == TokenType.Label &&
+                if (i < tokens.Count - 1 && tokens[i].TokenType == TokenType.Label &&
                      tokens[i + 1].TokenType == TokenType.RParen) 
-                    || tokens[i].TokenType == TokenType.LBrace
-                    || tokens[i].TokenType == TokenType.RBrace)
                 {
                     proof.Add(new Line(tokens.GetRange(0, i)));
                     tokens.RemoveRange(0, i);
                     i = 1;
+                } else if (tokens[i].TokenType == TokenType.LBrace
+                    || tokens[i].TokenType == TokenType.RBrace)
+                {
+                    proof.Add(new Line(tokens.GetRange(0, i-1)));
+                    tokens.RemoveRange(0, i-1);
+                    proof.Add(new Line(tokens.GetRange(0, 1)));
+                    tokens.RemoveRange(0, 1);
+                } else if (tokens[i].TokenType == TokenType.Identifier && tokens[i].Lexeme == "by")
+                {
+                    proof.Add(new Line(tokens.GetRange(0, i)));
+                    tokens.RemoveRange(0, i);
                 }
                 else
                 {
                     i++;
                 }
             }
-
             proof.Add(new Line(tokens.GetRange(0, i)));
-            
             return null;
         }
         
