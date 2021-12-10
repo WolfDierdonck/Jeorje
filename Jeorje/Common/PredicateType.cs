@@ -1,6 +1,9 @@
+using System;
+
 namespace Jeorje
 {
-    public class PredicateType
+    public abstract class PredicateType : ICloneable
     {
+        public abstract object Clone();
     }
 }

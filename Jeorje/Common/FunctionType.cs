@@ -4,12 +4,13 @@ using System.Linq;
 
 namespace Jeorje
 {
-    public class FunctionType : PredicateType, IEquatable<PredicateType>
+    public class FunctionType : PredicateType, IEquatable<PredicateType>, ICloneable
     {
-        public HashSet<PredicateType> ParamTypes;
+
+        public List<PredicateType> ParamTypes;
         public PredicateType ReturnType;
 
-        public FunctionType(HashSet<PredicateType> paramTypes, PredicateType returnType)
+        public FunctionType(List<PredicateType> paramTypes, PredicateType returnType)
         {
             ParamTypes = paramTypes;
             ReturnType = returnType;
@@ -22,7 +23,7 @@ namespace Jeorje
                 return false;
             }
 
-            return ((FunctionType) type).ParamTypes.SetEquals(ParamTypes) && ((FunctionType) type).ReturnType == ReturnType;
+            return ((FunctionType) type).ParamTypes.SequenceEqual(ParamTypes) && ((FunctionType) type).ReturnType == ReturnType;
         }
         
         public static bool operator ==(FunctionType lhs, FunctionType rhs)
@@ -41,5 +42,16 @@ namespace Jeorje
         }
         
         public static bool operator !=(FunctionType lhs, FunctionType rhs) => !(lhs == rhs);
+        
+        public override object Clone()
+        {
+            return new FunctionType(ParamTypes.Select(type => (PredicateType) type.Clone()).ToList(), 
+                (PredicateType) ReturnType.Clone());
+        }
+
+        public override string ToString()
+        {
+            return $"{string.Join(", ", ParamTypes)} --> {ReturnType}";
+        }
     }
 }

@@ -21,6 +21,7 @@ namespace Jeorje
         {
             Logger.AddError($"Latest: Parsing line {line}");
             var ast = CollapseTree(ShuntingYard.ConvertInfixToAST(line));
+            Typing.CheckPredicate(ast);
             Logger.RemoveError();
             return ast;
         }

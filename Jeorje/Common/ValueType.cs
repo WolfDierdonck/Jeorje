@@ -2,7 +2,7 @@ using System;
 
 namespace Jeorje
 {
-    public class ValueType : PredicateType, IEquatable<PredicateType>
+    public class ValueType : PredicateType, IEquatable<PredicateType>, ICloneable
     {
         public string TypeName;
 
@@ -37,5 +37,15 @@ namespace Jeorje
         }
         
         public static bool operator !=(ValueType lhs, ValueType rhs) => !(lhs == rhs);
+        
+        public override object Clone()
+        {
+            return new ValueType(TypeName);
+        }
+
+        public override string ToString()
+        {
+            return TypeName;
+        }
     }
 }

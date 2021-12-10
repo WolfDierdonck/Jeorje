@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Jeorje
 {
-    public class AST: IEquatable<AST>
+    public class AST: IEquatable<AST>, ICloneable
     {
         public Token Token;
 
@@ -32,8 +32,6 @@ namespace Jeorje
         {
             return (int) Token.TokenType;
         }
-        
-        
         
         public bool Equals(AST other)
         {
@@ -66,6 +64,11 @@ namespace Jeorje
         }
 
         public static bool operator !=(AST lhs, AST rhs) => !(lhs == rhs);
+        
+        public object Clone()
+        {
+            return new AST(Token, Children.Select(child => (AST) child.Clone()).ToList());
+        }
         
     }
 }

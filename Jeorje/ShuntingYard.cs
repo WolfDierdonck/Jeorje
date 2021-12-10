@@ -17,35 +17,37 @@ namespace Jeorje
         private static Dictionary<TokenType, int> _operatorPrecedence = new Dictionary<TokenType, int>
         {
             {TokenType.FuncSeparator, 120},
-            {TokenType.Forall, 110},
-            {TokenType.Exists, 100},
+            {TokenType.Forall, 10},
+            {TokenType.Exists, 11},
             {TokenType.MathOperator, 90},
-            {TokenType.Not, 80}, // is this correct, shouldnt it be the highest? of the operators, it is
+            {TokenType.Not, 80},
             {TokenType.And, 70},
             {TokenType.Or, 60},
             {TokenType.Implies, 50},
             {TokenType.Iff, 40},
             {TokenType.NotEqual, 30},
-            {TokenType.Equal, 20},
-            {TokenType.Comma, 10},
+            {TokenType.Equal, 89},
+            {TokenType.Comma, 121},
             {TokenType.Dot, 0},
+            {TokenType.Colon, 122}
         };
 
         private static Dictionary<TokenType, bool> _operatorRightAssociative = new Dictionary<TokenType, bool>
         {
-            {TokenType.Exists, true},
-            {TokenType.Forall, true},
+            {TokenType.Exists, false},
+            {TokenType.Forall, false},
             {TokenType.FuncSeparator, true},
             {TokenType.MathOperator, false},
-            {TokenType.Not, true},
+            {TokenType.Not, false},
             {TokenType.And, true},
             {TokenType.Or, true},
             {TokenType.Implies, false},
             {TokenType.Iff, false},
-            {TokenType.NotEqual, false},
-            {TokenType.Equal, false},
+            {TokenType.NotEqual, true},
+            {TokenType.Equal, true},
             {TokenType.Dot, true},
             {TokenType.Comma, true},
+            {TokenType.Colon, true}
         };
         public static BinaryAST ConvertInfixToAST(Line input)
         {
@@ -88,6 +90,7 @@ namespace Jeorje
                             Token o2;
                             while (operatorStack.Count != 0 && null != (o2 = operatorStack.Peek()) && o2.TokenType != TokenType.LParen)
                             {
+                                
                                 if (!_operatorRightAssociative[o1.TokenType] || !greaterPrecedence(o1, o2))
                                 {
                                     operatorStack.Pop();
@@ -118,7 +121,7 @@ namespace Jeorje
         }
 
         private static bool greaterPrecedence(Token op1, Token op2) {
-            if (_operatorPrecedence[op1.TokenType] > _operatorPrecedence[op2.TokenType]) { 
+            if (_operatorPrecedence[op1.TokenType] >= _operatorPrecedence[op2.TokenType]) { 
                 return true;
             }
             return false;

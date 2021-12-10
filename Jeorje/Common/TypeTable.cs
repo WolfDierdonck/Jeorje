@@ -4,33 +4,27 @@ using System.Linq;
 
 namespace Jeorje
 {
-    public class TypeTable
+    public class TypeTable: ICloneable
     {
-        public Dictionary<AST, HashSet<PredicateType>> Table;
+        public Dictionary<string, PredicateType> Table;
+
+        public Dictionary<string, HashSet<string>> Bindings;
 
         public TypeTable()
         {
-            Table = new Dictionary<AST, HashSet<PredicateType>>();
+            Table = new Dictionary<string, PredicateType>();
+            Bindings = new Dictionary<string, HashSet<string>>();
         }
 
-        public void UpdateEntry(AST ast, HashSet<PredicateType> possibleTypes)
+        public object Clone()
         {
-            if (!Table.ContainsKey(ast))
+            return new TypeTable
             {
-                Table[ast] = possibleTypes;
-            }
-            else
-            {
-                var tableTypes = Table[ast];
-                var union = tableTypes.Union(possibleTypes);
-
-                if (union == null)
-                {
-                    throw new Exception("typing failed");
-                }
-
-                Table[ast] = union.ToHashSet();
-            }
+                Table = Table.ToDictionary(entry => (string) entry.Key.Clone(),
+                    entry => (PredicateType) entry.Value.Clone()),
+                Bindings = Bindings.ToDictionary(entry => (string) entry.Key.Clone(),
+                    entry => new HashSet<string>(entry.Value))
+            };
         }
     }
 }

@@ -13,139 +13,380 @@ namespace Jeorje
 
         public static void CheckPredicate(AST predicate)
         {
-            var typeTable = new TypeTable();
-            var existingTypes = new HashSet<ValueType>();
+            var typeTables = new Stack<TypeTable>();
+            typeTables.Push(new TypeTable());
 
-            HashSet<PredicateType> CheckType(AST ast, HashSet<PredicateType> possibleTypes)
+            PredicateType CheckType(AST ast, PredicateType expectedType) // expected type is the type the parent expects this child to have
             {
+                var typeTable = typeTables.Peek();
+                
                 if (ast.Token.TokenType is TokenType.And or TokenType.Or or TokenType.Implies or TokenType.Iff)
                 {
-                    if (possibleTypes.Contains(new ValueType("bool"))) // AND/OR/<=>/=> must return a bool
+                    if (!IsTypeBool(expectedType)) // checks if expectedType is not a bool (null is counted as bool)
                     {
-                        ast.Children.ForEach(child => CheckType(child, CreateBool())); // every child must return a bool
-                    
-                        return CreateBool();
+                        throw new Exception(
+                            $"Error with {ast.Token.Lexeme}: Returns bool but is expected to return {expectedType}");
                     }
+                    
+                    ast.Children.ForEach(child => CheckType(child, CreateBool()));
+                    return CreateBool();
                 }
                 
                 if (ast.Token.TokenType is TokenType.True or TokenType.False)
                 {
-                    if (possibleTypes.Contains(new ValueType("bool"))) // true/false must return a bool
+                    if (!IsTypeBool(expectedType)) // checks if expectedType is not a bool (null is counted as bool)
                     {
-                        return CreateBool();
+                        throw new Exception(
+                            $"Error with {ast.Token.Lexeme}: Returns bool but is expected to return {expectedType}");
                     }
+                    
+                    return CreateBool();
                 }
 
                 if (ast.Token.TokenType is TokenType.Equal or TokenType.NotEqual)
                 {
-                    if (possibleTypes.Contains(new ValueType("bool")))
+                    if (!IsTypeBool(expectedType)) // checks if expectedType is not a bool (null is counted as bool)
                     {
-                        var typeOverlap = CheckType(ast.Children[0], typeTable.Table[ast.Children[0]])
-                            .Union(CheckType(ast.Children[1], typeTable.Table[ast.Children[0]])).ToHashSet();
-                    
-                        if (typeOverlap.Any()) // left and right types must have overlap
+                        throw new Exception(
+                            $"Error with {ast.Token.Lexeme}: Returns bool but is expected to return {expectedType}");
+                    }
+
+                    var leftType = CheckType(ast.Children[0], null);
+                    var rightType = CheckType(ast.Children[1], leftType);
+
+                    //now, left and right type must be equal (they can both be null)
+
+                    if (leftType is null || rightType is null)
+                    {
+                        var leftIdentifier = ast.Children[0].Token.TokenType == TokenType.Identifier
+                            ? ast.Children[0].Token.Lexeme
+                            : ast.Children[0].Children[0].Token.Lexeme;
+                        
+                        var rightIdentifier = ast.Children[1].Token.TokenType == TokenType.Identifier
+                            ? ast.Children[1].Token.Lexeme
+                            : ast.Children[1].Children[0].Token.Lexeme;
+                        
+                        if (typeTable.Bindings.ContainsKey(leftIdentifier))
                         {
-                            typeTable.UpdateEntry(ast.Children[0], typeOverlap);
-                            typeTable.UpdateEntry(ast.Children[1], typeOverlap);
-                    
-                            return CreateBool();
+                            typeTable.Bindings[leftIdentifier].Add(rightIdentifier);
+                        }
+                        else
+                        {
+                            typeTable.Bindings[leftIdentifier] = new HashSet<string> {rightIdentifier};
+                        }
+                        
+                        if (typeTable.Bindings.ContainsKey(rightIdentifier))
+                        {
+                            typeTable.Bindings[rightIdentifier].Add(leftIdentifier);
+                        }
+                        else
+                        {
+                            typeTable.Bindings[rightIdentifier] = new HashSet<string> {leftIdentifier};
                         }
                     }
+                    else
+                    {
+                        if (leftType is ValueType leftValue && rightType is ValueType rightValue)
+                        {
+                            if (leftValue != rightValue)
+                            {
+                                throw new Exception($"Error with {ast.Token.Lexeme}: both sides must be of equal types");
+                            }
+                        }
+                        
+                        else if (leftType is FunctionType leftFunction && rightType is FunctionType rightFunction)
+                        {
+                            if (leftFunction != rightFunction)
+                            {
+                                throw new Exception($"Error with {ast.Token.Lexeme}: both sides must be of equal types");
+                            }
+                        }
+                        else
+                        {
+                            throw new Exception($"Error with {ast.Token.Lexeme}: both sides must be of equal types");
+                        }
+                    }
+                    return CreateBool();
                 }
 
                 if (ast.Token.TokenType == TokenType.Dot)
                 {
-                    // TODO: overwrite typeTable with stuff on ast.children[0]
+                    var quantifier = ast.Children[0];
+                    var newTypeTable = (TypeTable) typeTable.Clone();
+                    typeTables.Push(newTypeTable);
+                    typeTable = typeTables.Peek();
+
+                    if (quantifier.Children[1].Token.TokenType != TokenType.Comma)
+                    {
+                        CheckType(quantifier.Children[1], null);
+                    }
+                    else // right side is a comma
+                    {
+                        var commaAst = quantifier.Children[1];
+                        commaAst.Children.ForEach(child => CheckType(child, null));
+                    }
                     
-                    return CheckType(ast.Children[1], possibleTypes);
+                    CheckType(ast.Children[1], CreateBool());
+                    
+                    foreach (var binding in typeTable.Bindings)
+                    {
+                        if (binding.Key != null)
+                        {
+                            foreach (var type in binding.Value)
+                            {
+                                if (type != null)
+                                {
+                                    var leftType = typeTable.Table[binding.Key];
+                                    var rightType = typeTable.Table[type];
+                                    if (leftType is ValueType leftValue && rightType is ValueType rightValue)
+                                    {
+                                        if (leftValue != rightValue)
+                                        {
+                                            throw new Exception($"Equal types do not match");
+                                        }
+                                    }
+                        
+                                    else if (leftType is FunctionType leftFunction && rightType is FunctionType rightFunction)
+                                    {
+                                        if (leftFunction != rightFunction)
+                                        {
+                                            throw new Exception($"Equal types do not match");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        throw new Exception($"Equal types do not match");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    typeTables.Pop();
+                    return CreateBool();
                 }
 
                 if (ast.Token.TokenType == TokenType.MathOperator)
                 {
-                    if (possibleTypes.Contains(new ValueType("bool")))
+                    if (!IsTypeBool(expectedType)) // checks if expectedType is not a bool (null is counted as bool)
                     {
-                        if (CheckType(ast.Children[0], CreateNat()).Contains(new ValueType("nat")) 
-                            && CheckType(ast.Children[1], CreateNat()).Contains(new ValueType("nat")))
-                        {
-                            return CreateBool();
-                        }
+                        throw new Exception(
+                            $"Error with {ast.Token.Lexeme}: Returns bool but is expected to return {expectedType}");
                     }
-                    
-                }
 
-                if (ast.Token.TokenType == TokenType.Comma)
-                {
-                    return ast.Children.Select(child => (PredicateType) new FunctionType(
-                        CheckType(child, null), null)).ToHashSet();
-                    // this is wrong, it must enumerate all possible combinations!
+                    CheckType(ast.Children[0], CreateNat());
+                    CheckType(ast.Children[1], CreateNat());
+                    return CreateBool();
                 }
 
                 if (ast.Token.TokenType == TokenType.Not)
                 {
-                    if (possibleTypes.Contains(new ValueType("bool")))
+                    if (!IsTypeBool(expectedType)) // checks if expectedType is not a bool (null is counted as bool)
                     {
-                        return CheckType(ast.Children[1], CreateBool());
+                        throw new Exception(
+                            $"Error with {ast.Token.Lexeme}: Returns bool but is expected to return {expectedType}");
                     }
+
+                    CheckType(ast.Children[1], CreateBool());
+                    return CreateBool();
                 }
 
                 if (ast.Token.TokenType == TokenType.FuncSeparator)
                 {
-                    var function = ast.Children[0];
-                    var argTypes = CheckType(ast.Children[1], null).Select(arg => 
-                        arg is ValueType ? new FunctionType(new HashSet<PredicateType> {arg}, null) : arg)
-                        .ToHashSet(); // do we need possibleTypes?
-                    
-                    if (!typeTable.Table.ContainsKey(function))
+                    var functionIdentifier = ast.Children[0].Token.Lexeme;
+
+                    if (typeTable.Table.ContainsKey(functionIdentifier))
                     {
+                        var returnType = ((FunctionType) typeTable.Table[functionIdentifier]).ReturnType;
+
+                        if (returnType == null)
+                        {
+                            ((FunctionType) typeTable.Table[functionIdentifier]).ReturnType = expectedType;
+                        }
                         
+                        else if (expectedType == null)
+                        {
+                            
+                        }
+                        
+                        else if (expectedType is ValueType expectedValue && returnType is ValueType returnValue)
+                        {
+                            if (returnValue != expectedValue)
+                            {
+                                throw new Exception($"Error with {functionIdentifier}: " +
+                                                    $"Returns {returnType} but is expected to return {expectedType}");
+                            }
+                        }
+                        
+                        else if (expectedType is FunctionType expectedFunction && returnType is FunctionType returnFunction)
+                        {
+                            if (returnFunction != expectedFunction)
+                            {
+                                throw new Exception($"Error with {functionIdentifier}: " +
+                                                    $"Returns {returnType} but is expected to return {expectedType}");
+                            }
+                        }
+                        else
+                        {
+                            throw new Exception($"Error with {functionIdentifier}: " +
+                                                $"Returns {returnType} but is expected to return {expectedType}");
+                        }
+                    }
+                    else
+                    {
+                        typeTable.Table[functionIdentifier] = new FunctionType(null, expectedType);
+                    }
+
+                    var functionType = (FunctionType) typeTable.Table[functionIdentifier];
+
+                    if (ast.Children[1].Token.TokenType != TokenType.Comma)
+                    {
+                        if (functionType.ParamTypes != null && functionType.ParamTypes.Count != 1)
+                        {
+                            throw new Exception("function must have same number of parameters everywhere");
+                        }
+
+                        var paramType = CheckType(ast.Children[1], functionType.ParamTypes?[0]);
+                        functionType.ParamTypes = new List<PredicateType> {paramType};
+                    }
+                    else
+                    {
+                        var commaAst = ast.Children[1];
+                        
+                        if (functionType.ParamTypes == null)
+                        {
+                           functionType.ParamTypes = commaAst.Children.Select(
+                               child => CheckType(child, null)).ToList();
+                        }
+                        else
+                        {
+                            var paramTypes = new List<PredicateType>();
+
+                            if (functionType.ParamTypes.Count != commaAst.Children.Count)
+                            {
+                                throw new Exception("function must have same number of parameters everywhere");
+                            }
+                            
+                            for (int i = 0; i < functionType.ParamTypes.Count; i++)
+                            {
+                                paramTypes.Add(CheckType(commaAst.Children[i], functionType.ParamTypes[i]));
+                            }
+
+                            functionType.ParamTypes = paramTypes;
+                        }
+                    }
+
+                    return functionType.ReturnType;
+                }
+
+                if (ast.Token.TokenType == TokenType.Identifier) // this will never be a function identifier
+                {
+                    if (int.TryParse(ast.Token.Lexeme, out _))
+                    {
+                        if (!IsTypeNat(expectedType)) // checks if expectedType is not a bool (null is counted as bool)
+                        {
+                            throw new Exception(
+                                $"Error with {ast.Token.Lexeme}: Returns nat but is expected to return {expectedType}");
+                        }
+
+                        return CreateNat();
+                    }
+
+                    if (!typeTable.Table.ContainsKey(ast.Token.Lexeme))
+                    {
+                        typeTable.Table[ast.Token.Lexeme] = expectedType;
+                        return expectedType;
+                    }
+                    
+                    var identifierType = typeTable.Table[ast.Token.Lexeme];
+
+                    if (expectedType == null)
+                    {
+                        return identifierType;
+                    }
+                    
+                    if (identifierType == null)
+                    {
+                        typeTable.Table[ast.Token.Lexeme] = expectedType;
+                        return expectedType;
+                    }
+
+                    if (identifierType != expectedType)
+                    {
+                        throw new Exception($"Error with {ast.Token.Lexeme}: " +
+                                            $"Returns {identifierType} but is expected to return {expectedType}");
+                    }
+
+                    return expectedType;
+                }
+
+                if (ast.Token.TokenType == TokenType.Colon)
+                {
+                    var rightType = new ValueType(ast.Children[1].Token.Lexeme);
+                    return CheckType(ast.Children[0], rightType);
+                }
+
+                throw new Exception($"unsupported token {ast.Token.TokenType} while typing");
+            }
+
+            if (!IsTypeBool(CheckType(predicate, CreateBool())))
+            {
+                throw new Exception("outermost statement must be of type bool");
+            }
+            
+            foreach (var binding in typeTables.Peek().Bindings)
+            {
+                if (binding.Key != null)
+                {
+                    foreach (var type in binding.Value)
+                    {
+                        if (type != null)
+                        {
+                            var leftType = typeTables.Peek().Table[binding.Key];
+                            var rightType = typeTables.Peek().Table[type];
+                            if (leftType is ValueType leftValue && rightType is ValueType rightValue)
+                            {
+                                if (leftValue != rightValue)
+                                {
+                                    throw new Exception($"Equal types do not match");
+                                }
+                            }
+                        
+                            else if (leftType is FunctionType leftFunction && rightType is FunctionType rightFunction)
+                            {
+                                if (leftFunction != rightFunction)
+                                {
+                                    throw new Exception($"Equal types do not match");
+                                }
+                            }
+                            else
+                            {
+                                throw new Exception($"Equal types do not match");
+                            }
+                        }
                     }
                 }
-
-                if (ast.Token.TokenType == TokenType.Identifier)
-                {
-                    // TODO: :)
-                }
-
-                throw new Exception("Typing failed");
-            }
-            
-            var topType = CheckType(predicate, CreateBool());
-            
-            if (!topType.SetEquals(CreateBool()))
-            {
-                throw new Exception("Top type is not a bool");
             }
         }
 
-
-        private static HashSet<PredicateType> CreateBool()
+        private static PredicateType CreateBool()
         {
-            return new HashSet<PredicateType> {new ValueType("bool")};
+            return new ValueType("bool");
         }
 
-        private static HashSet<PredicateType> CreateNat()
+        private static PredicateType CreateNat()
         {
-            return new HashSet<PredicateType>() {new ValueType("nat")};
+            return new ValueType("nat");
         }
 
-        private static bool IsTypeBool(HashSet<PredicateType> types)
+        private static bool IsTypeBool(PredicateType type)
         {
-            if (types.Contains(new ValueType("bool")))
-            {
-                return true;
-            }
-
-            return false;
+            return type is null || type is ValueType && (ValueType) type == (ValueType) CreateBool();
         }
-
-        private static bool IsTypeNat(HashSet<PredicateType> types)
+        
+        private static bool IsTypeNat(PredicateType type)
         {
-            if (types.Contains(new ValueType("nat")))
-            {
-                return true;
-            }
-
-            return false;
+            return type is null || type is ValueType && (ValueType) type == (ValueType) CreateNat();
         }
     }
 }
