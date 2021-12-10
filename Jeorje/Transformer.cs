@@ -122,7 +122,7 @@ namespace Jeorje
             i = 1; // first token will be a label i guess but this freaking sucks wfuewhfuewhfeuhfeufhewufew
             while (i < tokens.Count)
             {
-                if (i < tokens.Count - 1 && tokens[i].TokenType == TokenType.Label &&
+                if (i < tokens.Count - 1 && i != 0 && tokens[i].TokenType == TokenType.Label &&
                      tokens[i + 1].TokenType == TokenType.RParen) 
                 {
                     proof.Add(new Line(tokens.GetRange(0, i)));
@@ -131,14 +131,20 @@ namespace Jeorje
                 } else if (tokens[i].TokenType == TokenType.LBrace
                     || tokens[i].TokenType == TokenType.RBrace)
                 {
-                    proof.Add(new Line(tokens.GetRange(0, i-1)));
-                    tokens.RemoveRange(0, i-1);
+                    if (i != 0)
+                    {
+                        proof.Add(new Line(tokens.GetRange(0, i)));
+                        tokens.RemoveRange(0, i);   
+                    }
                     proof.Add(new Line(tokens.GetRange(0, 1)));
                     tokens.RemoveRange(0, 1);
-                } else if (tokens[i].TokenType == TokenType.Identifier && tokens[i].Lexeme == "by")
+                    i = 0;
+                } else if (tokens[i].TokenType == TokenType.Identifier && i != 0 &&
+                           (tokens[i].Lexeme == "by" || tokens[i].Lexeme == "closed"))
                 {
                     proof.Add(new Line(tokens.GetRange(0, i)));
                     tokens.RemoveRange(0, i);
+                    i = 1;
                 }
                 else
                 {
@@ -146,7 +152,7 @@ namespace Jeorje
                 }
             }
             proof.Add(new Line(tokens.GetRange(0, i)));
-            return null;
+            return new STFormat(premises, goal, proof);
         }
         
         private static NDFormat GetNDFormat(List<Token> tokens)
