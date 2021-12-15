@@ -39,5 +39,11 @@ namespace Jeorje
             errors.Count != 0 ? "-------------\nErrors:\n" + string.Join("\n", errors) : null;
 
         public static string LogAll() => LogSteps() + "\n" + LogWarnings() + "\n" + LogErrors();
+
+        public static void LogClear() {
+            steps = new List<string>();
+            warnings = new List<string>();
+            errors = new List<string>();
+        }
     }
 }
