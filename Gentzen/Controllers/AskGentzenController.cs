@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 namespace Gentzen.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class GentzenController : ControllerBase
     {
 
@@ -30,6 +30,12 @@ namespace Gentzen.Controllers
                 var plainText = await reader.ReadToEndAsync();
                 return Content(Gentzen.Gentzen.AskGentzen(plainText));
             }
+        }
+
+        [HttpGet]
+        public String Get()
+        {
+            return "We're Live!";
         }
     }
 }
