@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Gentzen.Gentzen.Common;
 using Gentzen.Gentzen.ND;
-using Gentzen.Gentzen.ST;
 
 namespace Gentzen.Gentzen
 {
@@ -114,10 +113,6 @@ namespace Gentzen.Gentzen
             return "ND Proof is valid";
         }
 
-        public static string ValidateST(List<AST> predicates, AST goal, STBranch proof)
-        {
-            throw new Exception("ST is unimplemented");
-            return "ST Proof is valid";
-        }
+
     }
 }
