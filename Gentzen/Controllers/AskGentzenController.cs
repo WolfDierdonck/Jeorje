@@ -12,18 +12,18 @@ namespace Gentzen.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class JustTestingController : ControllerBase
+    public class GentzenController : ControllerBase
     {
 
-        private readonly ILogger<JustTestingController> _logger;
+        private readonly ILogger<GentzenController> _logger;
 
-        public JustTestingController(ILogger<JustTestingController> logger)
+        public GentzenController(ILogger<GentzenController> logger)
         {
             _logger = logger;
         }
 
         [HttpPost]
-        public async Task<ContentResult> PostJustTesting()
+        public async Task<ContentResult> PostAskGentzen()
         {
             using (var reader = new StreamReader(Request.Body))
             {

@@ -6,9 +6,9 @@ using Gentzen.Gentzen.ST;
 
 namespace Gentzen.Gentzen
 {
-    class Jeorje
+    class Gentzen
     {
-        public static string AskJeorje(string input)
+        public static string AskGentzen(string input)
         {
             try
             {
