@@ -50,15 +50,16 @@ namespace Gentzen.Gentzen.Common
         
         public static bool operator ==(AST lhs, AST rhs)
         {
-            if (lhs is null)
+            if (lhs is null && rhs is null)
             {
-                if (rhs is null)
-                {
-                    return true;
-                }
-                // Only the left side is null.
+                return true;
+            }
+
+            if (lhs is null || rhs is null)
+            {
                 return false;
             }
+            
             // Equals handles case of null on right side.
             return lhs.Equals(rhs);
         }
