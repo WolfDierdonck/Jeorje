@@ -12,6 +12,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Jeorje\" />
+    <Folder Include="Gentzen\" />
   </ItemGroup>
 </Project>

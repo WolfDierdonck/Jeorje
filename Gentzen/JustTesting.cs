@@ -1,5 +1,5 @@
 ﻿using System;
-namespace TestAPIProject
+namespace Gentzen
 {
     public class JustTesting
     {
