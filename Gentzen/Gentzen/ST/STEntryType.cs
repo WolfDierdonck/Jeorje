@@ -1,4 +1,4 @@
-namespace Jeorje
+namespace Gentzen.Gentzen.ST
 {
     public enum STEntryType
     {

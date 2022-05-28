@@ -1,4 +1,6 @@
-namespace Jeorje
+using Gentzen.Gentzen.Common;
+
+namespace Gentzen.Gentzen.ST
 {
     public class STLine: ISTEntry
     {

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
-using System.Linq.Expressions;
+using Gentzen.Gentzen.Common;
+using Gentzen.Gentzen.ND;
+using Gentzen.Gentzen.ST;
 
-namespace Jeorje
+namespace Gentzen.Gentzen
 {
     class Jeorje
     {

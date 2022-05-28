@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using Gentzen.Gentzen.Common;
+using Gentzen.Gentzen.ND.NDRules;
 
-namespace Jeorje
+namespace Gentzen.Gentzen.ND
 {
     public static class NDRulifier
     {

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Jeorje
+namespace Gentzen.Gentzen.Common
 {
     public class FunctionType : PredicateType, IEquatable<PredicateType>, ICloneable
     {

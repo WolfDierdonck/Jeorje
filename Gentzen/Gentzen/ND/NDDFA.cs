@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Text.RegularExpressions;
 
-namespace Jeorje
+namespace Gentzen.Gentzen.ND
 {
     public static class NDDFA
     {

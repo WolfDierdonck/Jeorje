@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
+using Gentzen.Gentzen.Common;
 
-namespace Jeorje
+namespace Gentzen.Gentzen.ND.NDRules
 {
     public class NDImpE : NDRule
     {

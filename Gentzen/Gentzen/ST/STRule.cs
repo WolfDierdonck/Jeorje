@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using Gentzen.Gentzen.Common;
 
-namespace Jeorje
+namespace Gentzen.Gentzen.ST
 {
     public abstract class STRule: ISTEntry
     {

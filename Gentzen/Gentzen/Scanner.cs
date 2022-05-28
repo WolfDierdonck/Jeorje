@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Gentzen.Gentzen.Common;
+using Gentzen.Gentzen.ND;
 
-namespace Jeorje
+namespace Gentzen.Gentzen
 {
     public static class Scanner
     {

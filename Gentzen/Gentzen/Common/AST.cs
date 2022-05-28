@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Jeorje
+namespace Gentzen.Gentzen.Common
 {
     public class AST: IEquatable<AST>, ICloneable
     {

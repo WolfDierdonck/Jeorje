@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <None Remove="Microsoft.AspNetCore.Cors" />
-    <None Remove="Jeorje\" />
+    <None Remove="Gentzen\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />

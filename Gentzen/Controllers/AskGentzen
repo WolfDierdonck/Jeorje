@@ -28,7 +28,7 @@ namespace Gentzen.Controllers
             using (var reader = new StreamReader(Request.Body))
             {
                 var plainText = await reader.ReadToEndAsync();
-                return Content(Jeorje.Jeorje.AskJeorje(plainText));
+                return Content(Gentzen.Gentzen.AskGentzen(plainText));
             }
         }
     }

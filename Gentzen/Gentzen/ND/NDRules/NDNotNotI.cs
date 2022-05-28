@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Gentzen.Gentzen.Common;
 
-namespace Jeorje
+namespace Gentzen.Gentzen.ND.NDRules
 {
     public class NDNotNotI : NDRule
     {

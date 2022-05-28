@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Jeorje
+namespace Gentzen.Gentzen.ST
 {
     public class STBranch: ISTEntry
     {

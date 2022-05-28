@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Jeorje
+namespace Gentzen.Gentzen.Common
 {
     public class PCFormat: ProofFormat
     {

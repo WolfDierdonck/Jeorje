@@ -1,6 +1,6 @@
 using System;
 
-namespace Jeorje
+namespace Gentzen.Gentzen.Common
 {
     public abstract class PredicateType : ICloneable
     {

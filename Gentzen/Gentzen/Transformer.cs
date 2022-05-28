@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
+using Gentzen.Gentzen.Common;
+using Gentzen.Gentzen.ND;
+using Gentzen.Gentzen.ST;
 
-namespace Jeorje
+namespace Gentzen.Gentzen
 {
     public static class Transformer
     {

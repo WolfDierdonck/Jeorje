@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
 
-namespace Jeorje
+namespace Gentzen.Gentzen.Common
 {
     public static class Logger
     {

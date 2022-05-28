@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualBasic;
+using Gentzen.Gentzen.Common;
 
-namespace Jeorje
+namespace Gentzen.Gentzen.ND.NDRules
 {
     public class NDTrans : NDRule
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace Jeorje
+namespace Gentzen.Gentzen.Common
 {
     public class ValueType : PredicateType, IEquatable<PredicateType>, ICloneable
     {

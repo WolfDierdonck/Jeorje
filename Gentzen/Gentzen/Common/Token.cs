@@ -1,7 +1,6 @@
 using System;
-using System.Text;
 
-namespace Jeorje
+namespace Gentzen.Gentzen.Common
 {
     public class Token: IEquatable<Token>, ICloneable
     {
